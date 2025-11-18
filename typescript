@@ -1,0 +1,339 @@
+Script started on 2025-11-16 16:24:02+02:00 [TERM="tmux-256color" TTY="/dev/pts/2" COLUMNS="190" LINES="45"]
+[0m[49m[39m[27m[24m[K
+[1A7[0m[49m[39m[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m                                                                                                                                                      [0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;70m [0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m✔[0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;70m[0m[38;5;70m[48;5;236m[49m[39m[0m[49m[39m[27m[24m[32C[?2004h[?25l8[0m[49m[39m[27m[24m[J
+[[33mWARNING[39m]: Console output during zsh initialization detected.
+
+When using Powerlevel10k with instant prompt, console output during zsh
+initialization may indicate issues.
+
+You can:
+
+  - [1mRecommended[0m: Change [1m~/.zshrc[0m so that it does not perform console I/O
+    after the instant prompt preamble. See the link below for details.
+
+    * You [1mwill not[0m see this error message again.
+    * Zsh will start [1mquickly[0m and prompt will update [1msmoothly[0m.
+
+  - Suppress this warning either by running [1mp10k configure[0m or by manually
+    defining the following parameter:
+
+      [33mtypeset[39m -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+
+    * You [1mwill not[0m see this error message again.
+    * Zsh will start [1mquickly[0m but prompt will [1mjump down[0m after initialization.
+
+  - Disable instant prompt either by running [1mp10k configure[0m or by manually
+    defining the following parameter:
+
+      [33mtypeset[39m -g POWERLEVEL9K_INSTANT_PROMPT=off
+
+    * You [1mwill not[0m see this error message again.
+    * Zsh will start [1mslowly[0m.
+
+  - Do nothing.
+
+    * You [1mwill[0m see this error message every time you start zsh.
+    * Zsh will start [1mquickly[0m but prompt will [1mjump down[0m after initialization.
+
+For details, see:
+]8;;https://github.com/romkatv/powerlevel10k#instant-prompthttps://github.com/romkatv/powerlevel10k#instant-prompt]8;;
+
+[33m-- console output produced during zsh initialization follows --[39m
+
+zsh: corrupt history file /home/total_normie/.histfile
+[0m[38;5;31m[49m[39m[27m[24m[1m[7m%[27m[1m[0m                                                                                                                                                                                             [0m[49m[39m[27m[24m[K[0m[27m[24m[J[0m[49m[39m[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[133C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;70m [0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m✔[0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;70m[0m[38;5;70m[48;5;236m[49m[39m[140D[?25h[?2004hnvim .tmux    t  z jbun run dev       b  bbunx   b  [7mnpx ts-node --transpile-only scripts/scrape.ts[27m
+[KM[49C[27mn[27mp[27mx[27m [27mt[27ms[27m-[27mn[27mo[27md[27me[27m [27m-[27m-[27mt[27mr[27ma[27mn[27ms[27mp[27mi[27ml[27me[27m-[27mo[27mn[27ml[27my[27m [27ms[27mc[27mr[27mi[27mp[27mt[27ms[27m/[27ms[27mc[27mr[27ma[27mp[27me[27m.[27mt[27ms[1B[K[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;76m❯[0m[38;5;76m[49m[39m[27m[24m npx ts-node --transpile-only scripts/scrape.ts[K
+[K[?25h[K
+[1G[0Knode:internal/modules/cjs/loader:1408
+  throw err;
+  ^
+
+Error: Cannot find module './scrape.ts'
+Require stack:
+- /home/total_normie/repos/jysk-search/scripts/imaginaryUncacheableRequireResolveScript
+[90m    at Module._resolveFilename (node:internal/modules/cjs/loader:1405:15)[39m
+[90m    at require.resolve (node:internal/modules/helpers:145:19)[39m
+    at requireResolveNonCached [90m(/home/total_normie/repos/jysk-search/[39mnode_modules/[4mts-node[24m/dist/bin.js:549:16[90m)[39m
+    at getProjectSearchDir [90m(/home/total_normie/repos/jysk-search/[39mnode_modules/[4mts-node[24m/dist/bin.js:519:40[90m)[39m
+    at phase3 [90m(/home/total_normie/repos/jysk-search/[39mnode_modules/[4mts-node[24m/dist/bin.js:267:27[90m)[39m
+    at bootstrap [90m(/home/total_normie/repos/jysk-search/[39mnode_modules/[4mts-node[24m/dist/bin.js:47:30[90m)[39m
+    at main [90m(/home/total_normie/repos/jysk-search/[39mnode_modules/[4mts-node[24m/dist/bin.js:33:12[90m)[39m
+    at Object.<anonymous> [90m(/home/total_normie/repos/jysk-search/[39mnode_modules/[4mts-node[24m/dist/bin.js:579:5[90m)[39m
+[90m    at Module._compile (node:internal/modules/cjs/loader:1734:14)[39m
+[90m    at Object..js (node:internal/modules/cjs/loader:1899:10)[39m {
+  code: [32m'MODULE_NOT_FOUND'[39m,
+  requireStack: [
+    [32m'/home/total_normie/repos/jysk-search/scripts/imaginaryUncacheableRequireResolveScript'[39m
+  ]
+}
+
+Node.js v24.2.0
+[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hnpx ts-node --transpile-only scripts/scrape.ts
+[K[KM[49C                                              [1B[KM[49Cnpx ts-node --transpile-only scripts/scrape.ts[1B[K[KM[49C                                              [1B[KM[49C[7mnpx ts-node --transpile-only scripts/scrape.ts[27m[46D[27mn[27mp[27mx[27m [27mt[27ms[27m-[27mn[27mo[27md[27me[27m [27m-[27m-[27mt[27mr[27ma[27mn[27ms[27mp[27mi[27ml[27me[27m-[27mo[27mn[27ml[27my[27m [27ms[27mc[27mr[27mi[27mp[27mt[27ms[27m/[27ms[27mc[27mr[27ma[27mp[27me[27m.[27mt[27ms[1Cscripts/scrape.ts[17Drscripts/scrape.ts[17Dcscripts/scrape.ts[17D/scripts/scrape.ts[17D[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m npx ts-node --transpile-only src/scripts/scrape.ts[K[17D[?25h
+[1G[0KError: Cannot find package '~' imported from /home/total_normie/repos/jysk-search/src/scripts/scrape.ts
+[90m    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:255:9)[39m
+[90m    at packageResolve (node:internal/modules/esm/resolve:767:81)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:853:18)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:983:11)[39m
+[90m    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)[39m
+[90m    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:725:25)[39m
+[90m    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)[39m
+[90m    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)[39m
+[90m    at ModuleJob.#link (node:internal/modules/esm/module_job:201:49)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m
+}
+[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hbnpx ts-node --transpile-only src/scripts/scrape.ts[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m npx ts-node --transpile-only src/scripts/scrape.ts[K[?25h
+[1G[0KError: Cannot find module '/home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks' imported from /home/total_normie/repos/jysk-search/src/scripts/scrape.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:274:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:859:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:983:11)[39m
+[90m    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)[39m
+[90m    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:725:25)[39m
+[90m    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)[39m
+[90m    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)[39m
+[90m    at ModuleJob.#link (node:internal/modules/esm/module_job:201:49)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks'[39m
+}
+[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hkkkkkkkkkkkk[11Dnpx ts-node --transpile-only src/scripts/scrape.ts[20Dcripts/scrape.ts    
+[K[KM[60C[11Dnvim .                                        [1B[KM[55Ctmux      t  [?25lM[0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[122C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[48;5;236m[38;5;106m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;106m NORMAL[0m[38;5;106m[48;5;236m[48;5;236m[38;5;106m[0m[38;5;106m[48;5;236m[48;5;236m[38;5;106m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;106m[0m[38;5;106m[48;5;236m[49m[39m[140D[?25hz jbun run dev[10C[10Dz j        [9D   nvim .npx ts-node --transpile-only scripts/scrape.ts
+[KM[94C[1B[KM[79Crc/scripts/scrape.ts[1B[KM[98C[49Dkkkkkkkkkkk                                       [40D[10Dnpx ts-node --transpile-only src/scripts/scrape.ts[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m npx ts-node --transpile-only src/scripts/scrape.ts[K[?25h
+[1G[0KError: Cannot find module '/home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks' imported from /home/total_normie/repos/jysk-search/src/scripts/scrape.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:274:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:859:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:983:11)[39m
+[90m    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)[39m
+[90m    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:725:25)[39m
+[90m    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)[39m
+[90m    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)[39m
+[90m    at ModuleJob.#link (node:internal/modules/esm/module_job:201:49)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks'[39m
+}
+[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hjjjj  [?25lM[0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[122C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[48;5;236m[38;5;106m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;106m NORMAL[0m[38;5;106m[48;5;236m[48;5;236m[38;5;106m[0m[38;5;106m[48;5;236m[48;5;236m[38;5;106m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;106m[0m[38;5;106m[48;5;236m[49m[39m[140D[?25hnpx ts-node --transpile-only src/scripts/scrape.ts[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m npx ts-node --transpile-only src/scripts/scrape.ts[K[?25h
+[1G[0K⠙[1G[0KError: Cannot find module '/home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks' imported from /home/total_normie/repos/jysk-search/src/scripts/scrape.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:274:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:859:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:983:11)[39m
+[90m    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)[39m
+[90m    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:725:25)[39m
+[90m    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)[39m
+[90m    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)[39m
+[90m    at ModuleJob.#link (node:internal/modules/esm/module_job:201:49)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks'[39m
+}
+[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hnpx ts-node --transpile-only src/scripts/scrape.ts[50D                                                  [50Dbbun run scrape[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m bun run scrape[K[?25h
+[0m[2m[35m$[0m [2m[1mts-node --transpileOnly src/scripts/scrape.ts[0m
+Error: Cannot find module '/home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks' imported from /home/total_normie/repos/jysk-search/src/scripts/scrape.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:274:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:859:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:983:11)[39m
+[90m    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)[39m
+[90m    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:725:25)[39m
+[90m    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)[39m
+[90m    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)[39m
+[90m    at ModuleJob.#link (node:internal/modules/esm/module_job:201:49)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks'[39m
+}
+[0m[31merror[0m[2m:[0m script [1m"scrape"[0m exited with code 1[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hjjkkk  j  bun run scrape[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m bun run scrape[K[?25h
+[0m[2m[35m$[0m [2m[1mts-node --transpileOnly src/scripts/scrape.ts[0m
+Error: Cannot find module '/home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks' imported from /home/total_normie/repos/jysk-search/src/scripts/scrape.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:274:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:859:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:983:11)[39m
+[90m    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)[39m
+[90m    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:725:25)[39m
+[90m    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)[39m
+[90m    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)[39m
+[90m    at ModuleJob.#link (node:internal/modules/esm/module_job:201:49)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks'[39m
+}
+[0m[31merror[0m[2m:[0m script [1m"scrape"[0m exited with code 1[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hbun run scrape[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m bun run scrape[K[?25h
+[0m[2m[35m$[0m [2m[1mts-node --transpileOnly src/scripts/scrape.ts[0m
+Error: Cannot find module '/home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks' imported from /home/total_normie/repos/jysk-search/src/scripts/scrape.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:274:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:859:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:983:11)[39m
+[90m    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)[39m
+[90m    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:725:25)[39m
+[90m    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)[39m
+[90m    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)[39m
+[90m    at ModuleJob.#link (node:internal/modules/esm/module_job:201:49)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks'[39m
+}
+[0m[31merror[0m[2m:[0m script [1m"scrape"[0m exited with code 1[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hbun run scrape[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m bun run scrape[K[?25h
+[0m[2m[35m$[0m [2m[1mts-node --transpileOnly src/scripts/scrape.ts[0m
+Error: Cannot find module '/home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks' imported from /home/total_normie/repos/jysk-search/src/scripts/scrape.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:274:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:859:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:983:11)[39m
+[90m    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)[39m
+[90m    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:725:25)[39m
+[90m    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)[39m
+[90m    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)[39m
+[90m    at ModuleJob.#link (node:internal/modules/esm/module_job:201:49)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks'[39m
+}
+[0m[31merror[0m[2m:[0m script [1m"scrape"[0m exited with code 1[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004h[7mnpm i -D tsconfig-paths[27m
+[KM[49C[27mn[27mp[27mm[27m [27mi[27m [27m-[27mD[27m [27mt[27ms[27mc[27mo[27mn[27mf[27mi[27mg[27m-[27mp[27ma[27mt[27mh[27ms[1B[KM[49C[1C[1C[1C i -D tsconfig-paths [21Dn i -D tsconfig-paths [21D i -D tsconfig-paths [21Db i -D tsconfig-paths[20Dbu i -D tsconfig-paths[20Dn i -D tsconfig-paths[20D[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m bun i -D tsconfig-paths[K
+[KM[5C[?25h[1B[KM[5C[1B
+[0m[2m[[1m0.05ms[0m[2m][0m [2m".env"[0m
+[0m[1mbun add [0m[2mv1.2.2 (c1708ea6)[0m
+  🔍 Resolving [1/3] [23D[0K  🔍 @tsconfig/node10 [25/28] [32D[0K  🚚 @tsconfig/node10 [30/30] [32D[0K  🚚 @tsconfig/node10 [31/30] [32D[0K  🔒 Saving lockfile... [26D[0K
+[0m[32minstalled[0m [1mtsconfig-paths[0m[2m@4.2.0[0m
+
+[32m6[0m packages[0m installed [0m[2m[[1m656.00ms[0m[2m][0m[0m
+[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[133C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;70m [0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m✔[0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;70m[0m[38;5;70m[48;5;236m[49m[39m[140D[?2004hbbun b  [7mnpx ts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts[27m
+[KM[49C[27mn[27mp[27mx[27m [27mt[27ms[27m-[27mn[27mo[27md[27me[27m [27m-[27mr[27m [27mt[27ms[27mc[27mo[27mn[27mf[27mi[27mg[27m-[27mp[27ma[27mt[27mh[27ms[27m/[27mr[27me[27mg[27mi[27ms[27mt[27me[27mr[27m [27m-[27m-[27mt[27mr[27ma[27mn[27ms[27mp[27mi[27ml[27me[27m-[27mo[27mn[27ml[27my[27m [27ms[27mr[27mc[27m/[27ms[27mc[27mr[27mi[27mp[27mt[27ms[27m/[27ms[27mc[27mr[27ma[27mp[27me[27m.[27mt[27ms[1B[KM[49C[1C[1C[1C ts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts [75Dn ts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts [75D ts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts [75Db ts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts[74Dbu ts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts[74Dn ts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts[74D[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;76m❯[0m[38;5;76m[49m[39m[27m[24m bun ts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts[K
+[KM[5C[?25h[1B[KM[5C[1B
+Error: Cannot find module '/home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks' imported from /home/total_normie/repos/jysk-search/src/scripts/scrape.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:274:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:859:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:983:11)[39m
+[90m    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:801:12)[39m
+[90m    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:725:25)[39m
+[90m    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)[39m
+[90m    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:309:38)[39m
+[90m    at ModuleJob.#link (node:internal/modules/esm/module_job:201:49)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/total_normie/repos/jysk-search/src/server/services/scrapers/scrapeAllProductLinks'[39m
+}
+[0m[31merror[0m[2m:[0m "[1mts-node[0m" exited with code 1
+[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004h[?25lM[0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[122C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[48;5;236m[38;5;106m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;106m NORMAL[0m[38;5;106m[48;5;236m[48;5;236m[38;5;106m[0m[38;5;106m[48;5;236m[48;5;236m[38;5;106m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;106m[0m[38;5;106m[48;5;236m[49m[39m[140D[?25h[7mnpx tsc[27m
+[KM[49C[27mn[27mp[27mx[27m [27mt[27ms[27mc[1B[K[?25l[?2004lMM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m npx tsc[K
+[K[?25h[K
+[1G[0K⠙[1G[0K[96msrc/app/_components/post.tsx[0m:[93m8[0m:[93m33[0m - [91merror[0m[90m TS2339: [0mProperty 'getLatest' does not exist on type 'DecorateRouterRecord<{ ctx: { headers: Headers; }; meta: object; errorShape: { data: { zodError: typeToFlattenedError<any, string> | null; code: "PARSE_ERROR" | "BAD_REQUEST" | ... 18 more ... | "CLIENT_CLOSED_REQUEST"; httpStatus: number; path?: string | undefined; stack?: string | undefined; }; message: string; co...'.
+
+[7m8[0m   const [latestPost] = api.post.getLatest.useSuspenseQuery();
+[7m [0m [91m                                ~~~~~~~~~[0m
+
+[96msrc/app/_components/post.tsx[0m:[93m12[0m:[93m31[0m - [91merror[0m[90m TS2339: [0mProperty 'create' does not exist on type 'DecorateRouterRecord<{ ctx: { headers: Headers; }; meta: object; errorShape: { data: { zodError: typeToFlattenedError<any, string> | null; code: "PARSE_ERROR" | "BAD_REQUEST" | ... 18 more ... | "CLIENT_CLOSED_REQUEST"; httpStatus: number; path?: string | undefined; stack?: string | undefined; }; message: string; co...'.
+
+[7m12[0m   const createPost = api.post.create.useMutation({
+[7m  [0m [91m                              ~~~~~~[0m
+
+[96msrc/server/api/routers/scrape.ts[0m:[93m85[0m:[93m32[0m - [91merror[0m[90m TS2554: [0mExpected 2 arguments, but got 1.
+
+[7m85[0m     const productLinks = await getProductLinks(page);
+[7m  [0m [91m                               ~~~~~~~~~~~~~~~[0m
+
+  [96msrc/server/services/scrapers/getProductLinks.ts[0m:[93m3[0m:[93m51[0m
+    [7m3[0m export const getProductLinks = async (page: Page, url: string) => {
+    [7m [0m [96m                                                  ~~~~~~~~~~~[0m
+    An argument for 'url' was not provided.
+
+[96msrc/server/api/routers/scrape.ts[0m:[93m88[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'allLinks' does not exist on type 'string[]'.
+
+[7m88[0m       links: productLinks.allLinks,
+[7m  [0m [91m                          ~~~~~~~~[0m
+
+[96msrc/server/api/routers/scrape.ts[0m:[93m91[0m:[93m32[0m - [91merror[0m[90m TS2339: [0mProperty 'screenshot' does not exist on type 'string[]'.
+
+[7m91[0m       screenshot: productLinks.screenshot,
+[7m  [0m [91m                               ~~~~~~~~~~[0m
+
+
+Found 5 errors in 2 files.
+
+Errors  Files
+     2  src/app/_components/post.tsx[90m:8[0m
+     3  src/server/api/routers/scrape.ts[90m:85[0m
+[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!5 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[124C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 2[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[48;5;236m[38;5;248m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;248m 4s[0m[38;5;248m[48;5;236m[48;5;236m[38;5;248m [0m[38;5;248m[48;5;236m[48;5;236m[38;5;248m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;248m[0m[38;5;248m[48;5;236m[49m[39m[140D[?2004hnpx tsc
+[K[KM[49Cbun[3C-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts[1BM[49C[4Ci -D tsconfig-paths                                                      [1BM[49C[4Crun scrape         [1B[KM[63C[14Dnpx ts-node --transpile-only src/scripts/scrape.ts[20Dcripts/scrape.ts    [1B[K[KM[49C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[1C[46Dnvim .                                        [1B[KM[55Cnpx ts-node --transpile-only scripts/scrape.ts[1B[KM[79Crc/scripts/scrape.ts[1B[KM[99C[50Dbun run scrape                                    [36D[10Di -D tsconfig-paths[1B[KM[53Cts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts[1B[KM[49Cnpx[3Cc                                                                      [1BM[49C       [1B[KM[49Cnpx tsc[1B[K[KM[56C[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m npx tsc[K
+[KM[9C[?25h[1B[KM[9C[1B
+[1G[0K⠙[1G[0K[96msrc/app/_components/post.tsx[0m:[93m17[0m:[93m4[0m - [91merror[0m[90m TS1128: [0mDeclaration or statement expected.
+
+[7m17[0m   });
+[7m  [0m [91m   ~[0m
+
+[96msrc/app/_components/post.tsx[0m:[93m50[0m:[93m1[0m - [91merror[0m[90m TS1128: [0mDeclaration or statement expected.
+
+[7m50[0m }
+[7m  [0m [91m~[0m
+
+
+Found 2 errors in the same file, starting at: src/app/_components/post.tsx[90m:17[0m
+
+[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!6 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 2[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hnpx tsc
+[K[KM[49C[1BM[49Cbun[3C-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts[1BM[49C[4Ci -D tsconfig-paths                                                      [1BM[49C[4Crun scrape         [1B[KM[63C[14Dnpx ts-node --transpile-only src/scripts/scrape.ts[50Dbun run scrape                                    [36D[10Di -D tsconfig-paths[1B[KM[53Cts-node -r tsconfig-paths/register --transpile-only src/scripts/scrape.ts[1B[KM[49Cnpx[3Cc                                                                      [1BM[49C       [1B[KM[49Ccclear[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m clear[K[?25h
+[H[J[3J[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!6 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[133C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;70m [0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m✔[0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;70m[0m[38;5;70m[48;5;236m[49m[39m[140D[?2004hclearnpx tsc
+[K[K[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;76m❯[0m[38;5;76m[49m[39m[27m[24m npx tsc[K
+[K[?25h[K
+[1G[0K⠙[1G[0K[96msrc/app/_components/post.tsx[0m:[93m17[0m:[93m4[0m - [91merror[0m[90m TS1128: [0mDeclaration or statement expected.
+
+[7m17[0m   });
+[7m  [0m [91m   ~[0m
+
+[96msrc/app/_components/post.tsx[0m:[93m50[0m:[93m1[0m - [91merror[0m[90m TS1128: [0mDeclaration or statement expected.
+
+[7m50[0m }
+[7m  [0m [91m~[0m
+
+
+Found 2 errors in the same file, starting at: src/app/_components/post.tsx[90m:17[0m
+
+[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!6 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[131C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 1[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[49m[39m[140D[?2004hnpx tsc
+[K[K[?25l[?2004lMM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m npx tsc[K
+[K[?25h[K
+[1G[0K⠙[1G[0K[96msrc/server/api/routers/scrape.ts[0m:[93m85[0m:[93m32[0m - [91merror[0m[90m TS2554: [0mExpected 2 arguments, but got 1.
+
+[7m85[0m     const productLinks = await getProductLinks(page);
+[7m  [0m [91m                               ~~~~~~~~~~~~~~~[0m
+
+  [96msrc/server/services/scrapers/getProductLinks.ts[0m:[93m3[0m:[93m51[0m
+    [7m3[0m export const getProductLinks = async (page: Page, url: string) => {
+    [7m [0m [96m                                                  ~~~~~~~~~~~[0m
+    An argument for 'url' was not provided.
+
+[96msrc/server/api/routers/scrape.ts[0m:[93m88[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'allLinks' does not exist on type 'string[]'.
+
+[7m88[0m       links: productLinks.allLinks,
+[7m  [0m [91m                          ~~~~~~~~[0m
+
+[96msrc/server/api/routers/scrape.ts[0m:[93m91[0m:[93m32[0m - [91merror[0m[90m TS2339: [0mProperty 'screenshot' does not exist on type 'string[]'.
+
+[7m91[0m       screenshot: productLinks.screenshot,
+[7m  [0m [91m                               ~~~~~~~~~~[0m
+
+
+Found 3 errors in the same file, starting at: src/server/api/routers/scrape.ts[90m:85[0m
+
+[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!6 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[124C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;160m 2[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m ✘[0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m [0m[38;5;160m[48;5;236m[48;5;236m[38;5;160m[0m[38;5;160m[48;5;236m[48;5;236m[38;5;248m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;248m 3s[0m[38;5;248m[48;5;236m[48;5;236m[38;5;248m [0m[38;5;248m[48;5;236m[48;5;236m[38;5;248m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;248m[0m[38;5;248m[48;5;236m[49m[39m[140D[?2004h        [7m^B[27mn[27mn[27mpx tsc
+[K[K[?25l[?2004lMM[0m[27m[24m[J[0m[49m[27m[24m[38;5;196m❯[0m[38;5;196m[49m[39m[27m[24m npx tsc[K
+[K[?25h[K
+[1G[0K⠙[1G[0K[1G[0K⠙[1G[0K[1m[7m%[27m[1m[0m                                                                                                                                                                                              [0m[27m[24m[J[0m[49m[39m
+[0m[49m[38;5;236m░▒▓[0m[38;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;255m [0m[38;5;255m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;31m  [1m[38;5;31m[48;5;236m[38;5;39m~[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m/repos/[1m[38;5;31m[48;5;236m[38;5;39mjysk-search[0m[38;5;39m[48;5;236m[48;5;236m[38;5;31m[0m[38;5;31m[48;5;236m[48;5;236m[38;5;31m [0m[38;5;31m[48;5;236m[48;5;236m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[48;5;236m[38;5;76m[0m[38;5;76m[48;5;236m[48;5;236m[38;5;178m [38;5;76m main [38;5;178m!6 [38;5;39m?7[0m[38;5;39m[48;5;236m[48;5;236m[38;5;178m [0m[38;5;178m[48;5;236m[49m[38;5;236m[0m[38;5;236m[49m[39m [0m[49m[39m[K[126C[0m[49m[38;5;236m[0m[38;5;236m[48;5;236m[38;5;70m [0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m✔[0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m [0m[38;5;70m[48;5;236m[48;5;236m[38;5;70m[0m[38;5;70m[48;5;236m[48;5;236m[38;5;248m[38;5;244m[0m[38;5;244m[48;5;236m[48;5;236m[38;5;248m 3s[0m[38;5;248m[48;5;236m[48;5;236m[38;5;248m [0m[38;5;248m[48;5;236m[48;5;236m[38;5;248m [49m[38;5;236m▓▒░[0m[38;5;236m[48;5;236m[38;5;248m[0m[38;5;248m[48;5;236m[49m[39m[140D[?2004h[7mnode dist/scripts/scrape.js[27m
+[KM[49C[27mn[27mo[27md[27me[27m [27md[27mi[27ms[27mt[27m/[27ms[27mc[27mr[27mi[27mp[27mt[27ms[27m/[27ms[27mc[27mr[27ma[27mp[27me[27m.[27mj[27ms[1B[KM[49C[1C[1C[1C[1C[1C[1C[1C[1C[1C[?25l[?2004lM[0m[27m[24m[J[0m[49m[27m[24m[38;5;76m❯[0m[38;5;76m[49m[39m[27m[24m node dist/scripts/scrape.js[K
+[KM[11C[?25h[1B[KM[11C[1B
+node:internal/modules/cjs/loader:1408
+  throw err;
+  ^
+
+Error: Cannot find module '/home/total_normie/repos/jysk-search/dist/script

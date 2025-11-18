@@ -1,40 +1,42 @@
 import { z } from "zod";
-
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-
-// Mocked DB
-interface Post {
-  id: number;
-  name: string;
-}
-const posts: Post[] = [
-  {
-    id: 1,
-    name: "Hello World",
-  },
-];
+import { chromium } from "playwright"; // ← playwright instead of puppeteer
+import { safeGoto } from "~/server/utils/safeGoto.ts";
 
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
-
-  create: publicProcedure
-    .input(z.object({ name: z.string().min(1) }))
+  search: publicProcedure
+    .input(z.object({ query: z.string() }))
     .mutation(async ({ input }) => {
-      const post: Post = {
-        id: posts.length + 1,
-        name: input.name,
-      };
-      posts.push(post);
-      return post;
-    }),
+      const base = "https://www.jysk.lv";
 
-  getLatest: publicProcedure.query(() => {
-    return posts.at(-1) ?? null;
-  }),
+      const browser = await chromium.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+
+      const context = await browser.newContext({
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      });
+
+      const page = await context.newPage();
+      await safeGoto(page, base + "/search?q=" + input.query);
+      await page.waitForLoadState("networkidle");
+
+      const firstResult = await page.$(
+        "a.lupa-search-result-product-image-section",
+      );
+      const productLink = await firstResult?.getAttribute("href");
+
+      await safeGoto(page, base + productLink);
+
+      const title = await page.textContent("h1.page-title");
+
+      const screenshotBuffer = await page.screenshot({ fullPage: true });
+      const screenshot = screenshotBuffer.toString("base64");
+
+      await browser.close();
+
+      return { title, screenshot };
+    }),
 });
