@@ -6,7 +6,6 @@ import { scrapeAllProducts } from "../server/services/scrapers/scrapeProducts.ts
   try {
     const results = await scrapeAllProducts();
     console.log(`Scraped ${results.length} products.`);
-    console.log(results);
   } catch (err) {
     console.error("Error scraping products:", err);
   } finally {

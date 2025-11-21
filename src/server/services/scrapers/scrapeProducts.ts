@@ -6,13 +6,22 @@ const CONCURRENCY = 3;
 
 export const scrapeAllProducts = async () => {
   const productRows: { url: string }[] = db
-    .prepare("SELECT url FROM product_links WHERE scraped = 0")
+    .prepare(
+      `
+      SELECT url 
+      FROM product_links
+      WHERE NOT EXISTS (
+        SELECT 1 FROM products WHERE products.url = product_links.url
+      )
+    `,
+    )
     .all();
 
   if (!productRows.length) return [];
 
   const queue = [...productRows];
   const results: any[] = [];
+  let failures = 0;
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -23,14 +32,16 @@ export const scrapeAllProducts = async () => {
     timezoneId: "Europe/Riga",
   });
 
-  const insertProduct = db.prepare(
-    `INSERT OR IGNORE INTO products (url, title, sku, image, description, prices, attributes, sizes, scraped_at) 
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-  );
+  const insertProduct = db.prepare(`
+    INSERT OR REPLACE INTO products 
+      (sku, url, title, image, description, prices, attributes, sizes, scraped_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  `);
 
-  const markScraped = db.prepare(
-    `UPDATE product_links SET scraped = 1 WHERE url = ?`,
-  );
+  const insertAltSku = db.prepare(`
+    INSERT OR IGNORE INTO product_alternate_skus (product_sku, alt_sku)
+    VALUES (?, ?)
+  `);
 
   const workers = Array.from({ length: CONCURRENCY }).map(async () => {
     while (queue.length > 0) {
@@ -41,24 +52,49 @@ export const scrapeAllProducts = async () => {
       try {
         await page.goto(row.url, { waitUntil: "networkidle" });
 
-        const infos = await getProductInfo(page); // handles multiple sizes
+        const infos = await getProductInfo(page);
+
         for (const info of infos) {
           insertProduct.run(
+            info.sku,
             info.url,
             info.title,
-            info.sku,
             info.image,
             info.description,
             JSON.stringify(info.prices),
             JSON.stringify(info.attributes),
             JSON.stringify(info.sizes),
           );
-          results.push(info);
-        }
 
-        markScraped.run(row.url);
+          // Only parse alternate SKUs from attributes.SKU
+          const skuAttr = info.attributes.find(
+            (a) => a.label.toLowerCase() === "sku",
+          )?.data;
+          if (skuAttr) {
+            const altSkus = skuAttr
+              .split(",")
+              .map((s) => s.trim())
+              .filter((s) => s && s !== info.sku);
+
+            for (const alt of altSkus) {
+              insertAltSku.run(info.sku, alt);
+            }
+          }
+
+          results.push(info);
+
+          // Pretty console log
+          console.clear();
+          console.log(`Last scraped: ${info.title}`);
+          console.log(`Products scraped: ${results.length}`);
+          console.log(`Failed scrapes: ${failures}`);
+        }
       } catch (err) {
-        console.error("Failed to scrape:", row.url, err);
+        failures++;
+        console.clear();
+        console.log(`Failed to scrape: ${row.url}`);
+        console.log(`Products scraped: ${results.length}`);
+        console.log(`Failed scrapes: ${failures}`);
       } finally {
         await page.close();
       }

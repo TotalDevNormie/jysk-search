@@ -15,7 +15,7 @@ export const getProductLinks = async (page: Page, url: string) => {
         await btn.scrollIntoViewIfNeeded();
         await Promise.allSettled([
           btn.click(),
-          page.waitForLoadState("networkidle", { timeout: 4000 }),
+          page.waitForLoadState("load", { timeout: 4000 }),
         ]);
       } catch {}
     }
