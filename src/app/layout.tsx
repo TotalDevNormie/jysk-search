@@ -4,6 +4,8 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import SearchBox from "./_components/search";
+import { HydrateClient } from "~/trpc/server";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -22,7 +24,20 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable}`}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <HydrateClient>
+            <div className="grid min-h-screen grid-rows-[auto_1fr]">
+              <header>
+                <SearchBox />
+              </header>
+              <main>{children}</main>
+              <footer className="px-4 py-16 border-t border-gray-200">
+                <p className="font-semibold">Vitālijs Vlads Juhno</p>
+                <p>2025</p>
+              </footer>
+            </div>
+          </HydrateClient>
+        </TRPCReactProvider>
       </body>
     </html>
   );

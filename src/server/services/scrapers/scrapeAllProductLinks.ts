@@ -8,7 +8,7 @@ const MAX_RETRIES = 3;
 
 export default async (categoryLinks: string[]): Promise<string[]> => {
   let browser = await chromium.launch({
-    headless: false,
+    headless: true,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -90,7 +90,7 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
   );
 
   browser = await chromium.launch({
-    headless: false,
+    headless: true,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",

@@ -2,7 +2,7 @@ import type { Page } from "playwright";
 import { safeAttr } from "./safeAttr.ts";
 import { safeText } from "./safeText.ts";
 
-type ProductInfo = {
+export type ProductInfo = {
   title: string;
   url: string;
   sku: string;
@@ -23,34 +23,47 @@ export const getProductInfo = async (page: Page): Promise<ProductInfo[]> => {
     "#product-options-wrapper select.super-attribute-select",
   );
 
-  if (!select) return [await scrapeProductInfo(page)];
+  if (!select) {
+    const info = await scrapeProductInfo(page);
+    return [
+      {
+        ...info,
+        sizes: [{ size: "Default", sku: info.sku }],
+      },
+    ];
+  }
 
-  const options = await select.$$eval(
-    "option",
-    (els) =>
-      els
-        .map((el) => ({
-          value: (el as HTMLOptionElement).value,
-          label: el.textContent?.trim() || "",
-        }))
-        .filter((o) => o.value), // skip blank/default
+  const options = await select.$$eval("option", (els) =>
+    els
+      .map((el) => ({
+        value: (el as HTMLOptionElement).value,
+        label: el.textContent?.trim() || "",
+      }))
+      .filter((o) => o.value),
   );
 
-  const sizes: Array<{ size: string; sku: string }> = [];
-  const products: ProductInfo[] = [];
+  const scraped: Array<{
+    info: ProductInfo;
+    size: { size: string; sku: string };
+  }> = [];
 
   for (const opt of options) {
     await select.selectOption(opt.value);
     await page.waitForLoadState("networkidle");
 
     const info = await scrapeProductInfo(page);
-    sizes.push({ size: opt.label, sku: info.sku });
-    products.push(info);
+
+    scraped.push({
+      info,
+      size: { size: opt.label, sku: info.sku },
+    });
   }
 
-  return products.map((p) => ({
-    ...p,
-    sizes,
+  const allSizes = scraped.map((s) => s.size);
+
+  return scraped.map((s) => ({
+    ...s.info,
+    sizes: allSizes, // everyone gets the full list
   }));
 };
 
@@ -93,17 +106,20 @@ const scrapeProductInfo = async (page: Page): Promise<ProductInfo> => {
       "data-value",
     ),
 
-    page.$$eval(".attributes-wrapper .attribute", (nodes) =>
-      nodes.map((n) => ({
+    page.$$eval(".attributes-wrapper", (wrappers) => {
+      const visible = wrappers.find((w) => w.offsetParent !== null);
+      if (!visible) return [];
+
+      return [...visible.querySelectorAll(".attribute")].map((n) => ({
         label: n.querySelector(".col.label")?.textContent?.trim() || "",
         data: n.querySelector(".col.data")?.textContent?.trim() || "",
-      })),
-    ),
+      }));
+    }),
     page.url(),
   ]);
 
   return {
-    title: title || "",
+    title: title?.trim() || "",
     sku: sku || "",
     image: image || "",
     description: description || "",

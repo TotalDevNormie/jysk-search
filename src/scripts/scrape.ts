@@ -11,6 +11,7 @@ import scrapeAllProductLinks from "../server/services/scrapers/scrapeAllProductL
     "https://www.jysk.lv/uzglabasanai.html",
     "https://www.jysk.lv/aizkari.html",
     "https://www.jysk.lv/majokla-dizains.html",
+    "https://www.jysk.lv/mebelu-kolekcijas.html",
   ];
 
   const result = await scrapeAllProductLinks(categoryLinks);

@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS product_links (
 // Products table
 db.exec(`CREATE TABLE IF NOT EXISTS products (
     sku TEXT PRIMARY KEY,
-    url TEXT UNIQUE,
+    url TEXT,
     title TEXT,
     image TEXT,
     description TEXT,

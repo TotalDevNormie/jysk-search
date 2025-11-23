@@ -1,35 +1,142 @@
 "use client";
-import { useState } from "react";
+import { Search } from "lucide-react";
+import Image from "next/image";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
+import type { ProductInfo } from "~/server/services/scrapers/getProductInfo";
+
+function keepFirstSizeInstance(products: ProductInfo[]) {
+  const seen = new Set();
+  const result = [];
+
+  for (const p of products) {
+    const firstSizeSku = p.sizes?.[0]?.sku;
+    if (!firstSizeSku) {
+      result.push(p);
+      continue;
+    }
+
+    if (!seen.has(firstSizeSku)) {
+      seen.add(firstSizeSku);
+    }
+
+    if (seen.has(p.sku)) result.push(p);
+  }
+
+  return result;
+}
 
 export default function SearchBox() {
+  const router = useRouter();
   const [term, setTerm] = useState("");
+  const [focus, setFocus] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // run search when term changes
   const search = api.product.searchSuggestions.useQuery(
     { query: term },
-    {
-      enabled: term.length > 1, // avoid spam
-    }
+    { enabled: term.length > 2 },
   );
 
+  const handleSearchRedirect = () => {
+    router.push(`/search?query=${encodeURIComponent(term)}`);
+    inputRef.current?.blur();
+  };
+
+  const data = keepFirstSizeInstance(search?.data || []).slice(0, 5);
+
+  const handleSelect = (sku: string) => {
+    setTerm("");
+    setFocus(false);
+    router.push(`/product/${sku}`);
+  };
+
+  const isSixDigit = (str: string) => /^\d{6}$/.test(str);
   return (
-    <div>
+    <div className="sticky top-0 z-10 flex w-full items-center justify-between shadow-sm">
+      <Image
+        src="https://www.jysk.lv/media/logo/default/jysk-logo-outline.png"
+        width={70}
+        height={70}
+        alt="Jysk logo"
+        className="cursor-pointer p-4"
+        onClick={() => {
+          setTerm("");
+          setFocus(false);
+          router.push("/");
+        }}
+      />
+
       <input
         value={term}
+        ref={inputRef}
         onChange={(e) => setTerm(e.target.value)}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setTimeout(() => setFocus(false), 100)} // slight delay for click
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSearchRedirect();
+          }
+        }}
+        className="w-full p-4"
         placeholder="Search..."
       />
 
-      {/* suggestions */}
-      <ul>
-        {search.data?.map((item) => (
-          <li key={item.id}>
-            <img src={item.image} width={40} height={40} />
-            <span>{item.title}</span>
-          </li>
-        ))}
-      </ul>
+      <button className="border-gray flex cursor-pointer gap-4 border-l-2 p-4" onClick={handleSearchRedirect}>
+        <Search />
+        Meklēt
+      </button>
+
+      {focus && search?.data?.length > 0 && (
+        <div className="border-gray absolute top-full grid w-full border-t-2 bg-white">
+          {!isSixDigit(term) &&
+            data.map((item) => (
+              <SearchItem item={item} handleSelect={handleSelect} />
+            ))}
+          {isSixDigit(term) && (
+            <SearchItem
+              item={search.data.find((p: ProductInfo) => p.sku === term)}
+              withSize
+              handleSelect={handleSelect}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
+
+const SearchItem = ({
+  item,
+  handleSelect,
+  withSize,
+}: {
+  item: ProductInfo;
+  handleSelect: (sku: string) => void;
+  withSize?: boolean;
+}) => (
+  <div
+    onMouseDown={() => handleSelect(item.sku)}
+    key={item.sku+"-search"}
+    className="border-gray flex cursor-pointer gap-4 border-b-2 p-4"
+  >
+    <Image
+      src={item.image}
+      alt={item.title || "product"}
+      width={100}
+      height={100}
+      className="aspect-square h-20 w-20"
+    />
+    <div>
+      <p className="text-xl font-bold">
+        {item.title}{" "}
+        {withSize && item?.sizes && (
+          <span className="text-gray-500">
+            ( {item.sizes?.find((i) => i.sku === item.sku)?.size} )
+          </span>
+        )}
+      </p>
+      <p className="text-gray-500">SKU: {item.sizes && !withSize ? item?.sizes.map((s) => s.sku).join(", ") : item.sku}</p>
+    </div>
+  </div>
+);
