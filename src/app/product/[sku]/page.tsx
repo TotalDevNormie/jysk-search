@@ -133,7 +133,7 @@ export default async function ProductPage({ params }: Props) {
             <div>
               <h2 className="text-2xl font-bold">Papildus informācija:</h2>
               <ul>
-                {JSON.parse(data.attributes).map((attribute) => (
+                {JSON.parse(data.attributes).map((attribute: { label: string; data: string }) => (
                   <li
                     key={attribute.label}
                     className="border-gray border-b-2 p-2"

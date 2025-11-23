@@ -25,10 +25,10 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the application
-RUN npm run build
+RUN bun run build
 
 # Production stage
-FROM node:20-bookworm-slim AS runner
+FROM oven/bun:1-debian AS runner
 
 WORKDIR /app
 
@@ -81,7 +81,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/scraper.db ./scraper.db
 
 # Install Playwright Chromium browser
-RUN npx playwright install chromium
+RUN bunx playwright install chromium
 
 USER nextjs
 
