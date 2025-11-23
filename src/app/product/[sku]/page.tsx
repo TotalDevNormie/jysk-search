@@ -14,11 +14,11 @@ import Link from "next/link";
 import { Separator } from "~/components/ui/separator";
 
 type Props = {
-  params: { sku: string };
+  params: Promise<{ sku: string }>;
 };
 
 export default async function ProductPage({ params }: Props) {
-  const { sku } = params;
+  const { sku } = await params;
   const store = "JYSK Krasta";
 
   // You can call your server-side API directly
