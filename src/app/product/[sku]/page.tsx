@@ -162,7 +162,7 @@ async function AvailabilityAccordion({
   availabilityPromise: Promise<ProductAvailability> | null;
 }) {
   const availability = await availabilityPromise;
-  const grouped = availability?.stores.reduce((acc, store) => {
+  const grouped = availability?.stores.reduce<Record<string, ProductAvailability['stores'][number][]>>((acc, store) => {
     const city = store.city || "";
     if (!acc[city]) acc[city] = [];
     acc[city].push(store);
@@ -194,7 +194,7 @@ async function AvailabilityAccordion({
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-6">
-          {Object.entries(grouped).map(([city, stores], i, arr) => (
+          {Object.entries(grouped || {}).map(([city, stores], i, arr) => (
             <div key={city}>
               <h3 className="text-md mb-2 font-semibold">{city}</h3>
               <ul className="grid gap-2">
@@ -235,6 +235,7 @@ async function AvailabilityMain({
   store: string;
 }) {
   const availability = await availabilityPromise;
+  if (!availability) return <span className="text-red-500">Nav noliktavā</span>;
   const storeAvailability = availability.stores.find((s) =>
     s.address.includes(store),
   );
@@ -242,14 +243,15 @@ async function AvailabilityMain({
   let availabilityText: string;
   let color: string;
 
-  console.log("store: ", storeAvailability, parseInt(storeAvailability?.stock));
+  console.log("store: ", storeAvailability, parseInt(storeAvailability?.stock || ''));
 
   if (
-    parseInt(storeAvailability?.stock) ||
+    parseInt(storeAvailability?.stock || '') ||
     storeAvailability?.stock == "Vairāk par 5"
   ) {
-    availabilityText = storeAvailability?.stock;
-    if (storeAvailability?.stock < 5) {
+    availabilityText = storeAvailability?.stock || '';
+    const stockNum = parseInt(storeAvailability?.stock || '0');
+    if (stockNum > 0 && stockNum < 5) {
       color = "text-yellow-500";
     } else {
       color = "text-green-500";

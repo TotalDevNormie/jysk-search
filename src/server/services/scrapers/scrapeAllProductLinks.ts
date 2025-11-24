@@ -143,10 +143,10 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
   const retryCategories = failedCategories.filter((url) => {
     const row = db
       .prepare(`SELECT attempts FROM categories WHERE url = ?`)
-      .get(url);
-    return row.attempts < MAX_RETRIES;
-  });
+      .get(url) as { attempts: number } | undefined;
 
+    return row && row.attempts < MAX_RETRIES;
+  });
   if (retryCategories.length > 0) {
     console.log("Retrying failed categories:", retryCategories);
     const retryResults = await exports.default(retryCategories);

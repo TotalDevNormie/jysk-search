@@ -87,15 +87,15 @@ export default function SearchBox() {
         Meklēt
       </button>
 
-      {focus && search?.data?.length > 0 && (
+      {focus && search?.data && search?.data?.length > 0 && (
         <div className="border-gray absolute top-full grid w-full border-t-2 bg-white">
           {!isSixDigit(term) &&
             data.map((item) => (
               <SearchItem item={item} handleSelect={handleSelect} />
             ))}
-          {isSixDigit(term) && (
+          {isSixDigit(term) && search.data.find((p: ProductInfo) => p.sku === term) &&(
             <SearchItem
-              item={search.data.find((p: ProductInfo) => p.sku === term)}
+              item={search.data.find((p: ProductInfo) => p.sku === term)!}
               withSize
               handleSelect={handleSelect}
             />

@@ -107,7 +107,9 @@ const scrapeProductInfo = async (page: Page): Promise<ProductInfo> => {
     ),
 
     page.$$eval(".attributes-wrapper", (wrappers) => {
-      const visible = wrappers.find((w) => w.offsetParent !== null);
+      const visible = wrappers.find(
+        (w) => w instanceof HTMLElement && w.offsetParent !== null,
+      );
       if (!visible) return [];
 
       return [...visible.querySelectorAll(".attribute")].map((n) => ({

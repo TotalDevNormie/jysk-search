@@ -3,6 +3,14 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { db } from "~/server/services/db";
 import { getProductAvailability } from "~/server/services/scrapers/getAvailability";
+import type { ProductInfo } from "~/server/services/scrapers/getProductInfo";
+
+export type ProductInfoFlat = Pick<
+  ProductInfo,
+  "sku" | "title" | "url" | "image"
+> & {
+  sizes?: string;
+};
 
 export const productRouter = createTRPCRouter({
   searchSuggestions: publicProcedure
@@ -22,15 +30,19 @@ WHERE p.title LIKE ?
 GROUP BY p.sku 
   `);
 
-      const results = stmt.all(`%${q}%`, `%${q}%`, `%${q}%`);
+      const results = stmt.all(
+        `%${q}%`,
+        `%${q}%`,
+        `%${q}%`,
+      ) as unknown as ProductInfoFlat[];
 
-      return results.map((p) => ({
+      return results.map((p: ProductInfoFlat) => ({
         title: p.title,
         sku: p.sku,
         url: p.url,
-        sizes: JSON.parse(p.sizes),
+        sizes: JSON.parse(p.sizes || "") || [],
         image: p.image,
-      }));
+      })) as ProductInfo[];
     }),
   getProductBySku: publicProcedure
     .input(z.object({ sku: z.string() }))
@@ -46,7 +58,7 @@ GROUP BY p.sku
         `);
 
       const results = stmt.get(input.sku, input.sku);
-      return results;
+      return results as ProductInfo & { sizes?: string, prices?: string, attributes?: string };
     }),
   getProductAvailability: publicProcedure
     .input(z.object({ link: z.string(), size: z.string().optional() }))
@@ -71,7 +83,7 @@ GROUP BY p.sku
       await p.goto(input.link);
       if (input.size) await p.waitForLoadState("networkidle");
       const availability = await getProductAvailability(p, input.size);
-      await p.waitForTimeout(5000)
+      await p.waitForTimeout(5000);
       await p.close();
       await browser.close();
 

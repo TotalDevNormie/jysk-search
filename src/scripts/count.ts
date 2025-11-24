@@ -2,15 +2,20 @@
 
 import { db } from "../server/services/db.ts";
 
-const productLinks = db
+const rowProducts = db
   .prepare("SELECT COUNT(*) AS c FROM product_links")
-  .get().c;
+  .get() as { c: number };
 
-const scrapedLinks = db
+const productLinks = rowProducts.c;
+
+const rowLinks = db
   .prepare("SELECT COUNT(*) AS c FROM product_links WHERE scraped = 1")
-  .get().c;
+  .get() as { c: number };
 
-const products = db.prepare("SELECT COUNT(*) AS c FROM products").get().c;
+const scrapedLinks = rowLinks.c;
+
+const productsRow = db.prepare("SELECT COUNT(*) AS c FROM products").get() as {c: number};
+const products = productsRow.c;
 
 console.log("Total product links:", productLinks);
 console.log("Scraped links:", scrapedLinks);

@@ -5,17 +5,17 @@ import { getProductInfo } from "./getProductInfo.ts";
 const CONCURRENCY = 3;
 
 export const scrapeAllProducts = async () => {
-  const productRows: { url: string }[] = db
+  const productRows = db
     .prepare(
       `
-      SELECT url 
-      FROM product_links
-      WHERE NOT EXISTS (
-        SELECT 1 FROM products WHERE products.url = product_links.url
-      )
-    `,
+    SELECT url 
+    FROM product_links
+    WHERE NOT EXISTS (
+      SELECT 1 FROM products WHERE products.url = product_links.url
     )
-    .all();
+  `,
+    )
+    .all() as { url: string }[];
 
   if (!productRows.length) return [];
 

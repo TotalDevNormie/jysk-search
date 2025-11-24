@@ -1,10 +1,12 @@
 "use client";
-import { useState } from "react";
+
+import { Suspense, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import type { ProductInfo } from "~/server/services/scrapers/getProductInfo";
 import Link from "next/link";
 import { api } from "~/trpc/react";
+
 import {
   Pagination,
   PaginationContent,
@@ -27,6 +29,14 @@ import { Badge } from "~/components/ui/badge";
 const ITEMS_PER_PAGE = 12;
 
 export default function SearchResultsPage() {
+  return (
+    <Suspense>
+      <SearchResults />
+    </Suspense>
+  );
+}
+
+function SearchResults() {
   const params = useSearchParams();
   const query = params.get("query") || "";
   const [currentPage, setCurrentPage] = useState(1);
@@ -77,10 +87,13 @@ export default function SearchResultsPage() {
   return (
     <div className="container mx-auto space-y-8 p-6">
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">Meklēšanas rezultāti</h1>
+        <h1 className="text-4xl font-bold tracking-tight">
+          Meklēšanas rezultāti
+        </h1>
         <p className="text-muted-foreground">
           Atrada {products.length}{" "}
-          {products.length === 1 ? "product" : "products"} priekš vaicājuma "{query}"
+          {products.length === 1 ? "product" : "products"} priekš vaicājuma "
+          {query}"
         </p>
       </div>
 
@@ -99,7 +112,9 @@ export default function SearchResultsPage() {
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="text-center">
             <p className="text-xl font-semibold">Produkti nav atrasti</p>
-            <p className="text-muted-foreground">Pamēģinat pamainīt meklēšanu</p>
+            <p className="text-muted-foreground">
+              Pamēģinat pamainīt meklēšanu
+            </p>
           </div>
         </div>
       ) : (
@@ -122,8 +137,12 @@ export default function SearchResultsPage() {
                     </CardTitle>
                     <CardDescription>
                       {item?.sizes && (
-                        <Badge variant="secondary" className="font-mono text-xs">
-                         Izmērs: {item.sizes.find((s) => s.sku === item.sku)?.size}
+                        <Badge
+                          variant="secondary"
+                          className="font-mono text-xs"
+                        >
+                          Izmērs:{" "}
+                          {item.sizes.find((s) => s.sku === item.sku)?.size}
                         </Badge>
                       )}
                       <Badge variant="secondary" className="font-mono text-xs">
