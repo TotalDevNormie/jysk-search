@@ -15,16 +15,22 @@ type StoreAvailability = {
 
 export const getProductAvailability = async (
   page: Page,
-  size?: string
+  size?: string,
 ): Promise<ProductAvailability> => {
   const [stores, cuponLink] = await Promise.all([
     getAvailability(page, size),
-    safeAttr(page, ".promo-strip a", "href"),
+    page.locator(".promo-strip h2").textContent(),
   ]);
+
+  let cupon: string = "";
+
+  if (cuponLink) {
+    cupon = cuponLink!.split(">>")[0]?.trim() as string;
+  }
 
   return {
     stores,
-    cupon: cuponLink?.split("/").filter(Boolean).pop() || "",
+    cupon,
   };
 };
 

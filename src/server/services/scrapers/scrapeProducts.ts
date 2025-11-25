@@ -67,7 +67,7 @@ export const scrapeAllProducts = async () => {
           );
 
           // Only parse alternate SKUs from attributes.SKU
-          const skuAttr = info.attributes.find(
+          const skuAttr = info?.attributes?.find(
             (a) => a.label.toLowerCase() === "sku",
           )?.data;
           if (skuAttr) {

@@ -28,7 +28,7 @@ export default async function ProductPage({ params }: Props) {
     data?.url && data?.sizes
       ? {
           link: data.url,
-          size: JSON.parse(data?.sizes)?.find(
+          size: data?.sizes?.find(
             (s: { size: string; sku: string }) => s.sku === sku,
           )?.size,
         }
@@ -37,13 +37,16 @@ export default async function ProductPage({ params }: Props) {
     ? api.product.getProductAvailability(object)
     : null;
   // console.log(availability, object);
-  const prices = JSON.parse(data?.prices);
+  const prices = data?.prices;
   return (
     <div className="grid gap-8 p-4">
       <div className="flex justify-between gap-4">
         <h1 className="text-3xl font-bold">{data.title}</h1>
         <span className="text-nowrap">SKU: {data.sku}</span>
       </div>
+      <Suspense fallback={<Spinner />}>
+        <Cupon availibility={availability} />
+      </Suspense>
       <div>
         <h2 className="flex items-center gap-2">
           Pieejamība {store}:{" "}
@@ -65,12 +68,12 @@ export default async function ProductPage({ params }: Props) {
         </h2>
       </div>
 
-      <div className="relative h-[40vh] w-full mx-auto rounded-lg p-4">
+      <div className="relative mx-auto h-[40vh] w-full rounded-lg p-4">
         <Image
           src={data.image}
           alt={data.title}
           fill
-          className="object-contain w-full h-full"
+          className="h-full w-full object-contain"
         />
       </div>
       <div>
@@ -101,19 +104,15 @@ export default async function ProductPage({ params }: Props) {
         )}
       </div>
 
-      {data?.sizes && (
-        <SizeSelect
-          sizes={JSON.parse(data.sizes) as { size: string; sku: string }[]}
-          currentSku={data.sku}
-        />
-      )}
+      {data?.sizes && <SizeSelect sizes={data?.sizes} currentSku={data.sku} />}
 
       <p>
-        <span className="font-semibold">
-
-        Apskatīties mājaslapā:{" "}
-        </span>
-        <Link className="hover:underline text-blue-500" target="_blank" href={data?.url}>
+        <span className="font-semibold">Apskatīties mājaslapā: </span>
+        <Link
+          className="text-blue-500 hover:underline"
+          target="_blank"
+          href={data?.url}
+        >
           {data?.url}
         </Link>
       </p>
@@ -126,22 +125,24 @@ export default async function ProductPage({ params }: Props) {
           <AccordionContent className="grid gap-4">
             {data.description && (
               <div>
-                <h2 className="text-2xl font-bold">Apraksts: </h2>
+                <h2 className="text-lg font-bold">Apraksts: </h2>
                 <p className="p-2">{data.description}</p>
               </div>
             )}
             <div>
-              <h2 className="text-2xl font-bold">Papildus informācija:</h2>
+              <h2 className="text-lg font-bold">Papildus informācija:</h2>
               <ul>
-                {JSON.parse(data.attributes).map((attribute: { label: string; data: string }) => (
-                  <li
-                    key={attribute.label}
-                    className="border-gray border-b-2 p-2"
-                  >
-                    <span className="font-bold">{attribute.label}:</span>{" "}
-                    {attribute.data}
-                  </li>
-                ))}
+                {data?.attributes?.map(
+                  (attribute: { label: string; data: string }) => (
+                    <li
+                      key={attribute.label}
+                      className="border-gray border-b-2 p-2"
+                    >
+                      <span className="font-bold">{attribute.label}:</span>{" "}
+                      {attribute.data}
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
           </AccordionContent>
@@ -156,13 +157,29 @@ export default async function ProductPage({ params }: Props) {
   );
 }
 
+async function Cupon({
+  availibility,
+}: {
+  availibility: Promise<ProductAvailability> | null;
+}) {
+  const availabilityReady = await availibility;
+  if (!availabilityReady) return null;
+  return (
+    <div className="text-md fixed bottom-0 -ml-4 w-full bg-black p-4 text-center text-white">
+      {availabilityReady?.cupon}
+    </div>
+  );
+}
+
 async function AvailabilityAccordion({
   availabilityPromise,
 }: {
   availabilityPromise: Promise<ProductAvailability> | null;
 }) {
   const availability = await availabilityPromise;
-  const grouped = availability?.stores.reduce<Record<string, ProductAvailability['stores'][number][]>>((acc, store) => {
+  const grouped = availability?.stores.reduce<
+    Record<string, ProductAvailability["stores"][number][]>
+  >((acc, store) => {
     const city = store.city || "";
     if (!acc[city]) acc[city] = [];
     acc[city].push(store);
@@ -194,7 +211,7 @@ async function AvailabilityAccordion({
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-6">
-          {Object.entries(grouped || {}).map(([city, stores], i, arr) => (
+          {Object.entries(grouped || {}).map(([city, stores]) => (
             <div key={city}>
               <h3 className="text-md mb-2 font-semibold">{city}</h3>
               <ul className="grid gap-2">
@@ -203,7 +220,9 @@ async function AvailabilityAccordion({
                     <div className="flex justify-between gap-2 p-4">
                       <p className="text-md font-medium">{s.address}</p>
                       <div>
-                        <p className={`${getColor(s.stock)} text-right`}>{s.stock}</p>
+                        <p className={`${getColor(s.stock)} text-right`}>
+                          {s.stock}
+                        </p>
                         <p>
                           {s.sampleAvailable && (
                             <span>Paraugs pieejams veikalā</span>
@@ -243,14 +262,18 @@ async function AvailabilityMain({
   let availabilityText: string;
   let color: string;
 
-  console.log("store: ", storeAvailability, parseInt(storeAvailability?.stock || ''));
+  console.log(
+    "store: ",
+    storeAvailability,
+    parseInt(storeAvailability?.stock || ""),
+  );
 
   if (
-    parseInt(storeAvailability?.stock || '') ||
+    parseInt(storeAvailability?.stock || "") ||
     storeAvailability?.stock == "Vairāk par 5"
   ) {
-    availabilityText = storeAvailability?.stock || '';
-    const stockNum = parseInt(storeAvailability?.stock || '0');
+    availabilityText = storeAvailability?.stock || "";
+    const stockNum = parseInt(storeAvailability?.stock || "0");
     if (stockNum > 0 && stockNum < 5) {
       color = "text-yellow-500";
     } else {

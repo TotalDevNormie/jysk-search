@@ -13,8 +13,8 @@ export type ProductInfo = {
     oldPrice?: string;
   };
   image: string;
-  attributes: Array<{ label: string; data: string }>;
-  sizes?: Array<{ size: string; sku: string }>;
+  attributes: Array<{ label: string; data: string }> | null;
+  sizes?: Array<{ size: string; sku: string }> | null;
   description?: string;
 };
 
@@ -28,7 +28,6 @@ export const getProductInfo = async (page: Page): Promise<ProductInfo[]> => {
     return [
       {
         ...info,
-        sizes: [{ size: "Default", sku: info.sku }],
       },
     ];
   }

@@ -1,7 +1,10 @@
+import { and, eq, ilike, isNotNull, isNull, or, sql } from "drizzle-orm";
 import { chromium } from "playwright";
-import { z } from "zod";
+import { set, z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { db } from "~/server/services/db";
+import { db } from "~/server/db";
+import { product_alternate_skus, products } from "~/server/db/schema";
+// import { db } from "~/server/services/db";
 import { getProductAvailability } from "~/server/services/scrapers/getAvailability";
 import type { ProductInfo } from "~/server/services/scrapers/getProductInfo";
 
@@ -19,46 +22,62 @@ export const productRouter = createTRPCRouter({
       const q = input.query.trim();
       if (!q) return [];
 
-      const stmt = db.prepare(`
-SELECT p.sku, p.title, p.url, p.image, p.prices, p.sizes
-FROM products p 
-LEFT JOIN product_alternate_skus a 
-  ON p.sku = a.product_sku 
-WHERE p.title LIKE ? 
-  OR p.sku LIKE ? 
-  OR a.alt_sku LIKE ? 
-GROUP BY p.sku 
-  `);
-
-      const results = stmt.all(
-        `%${q}%`,
-        `%${q}%`,
-        `%${q}%`,
-      ) as unknown as ProductInfoFlat[];
-
-      return results.map((p: ProductInfoFlat) => ({
-        title: p.title,
-        sku: p.sku,
-        url: p.url,
-        sizes: JSON.parse(p.sizes || "") || [],
-        image: p.image,
-      })) as ProductInfo[];
+      return (await db
+        .select({
+          sku: products.sku,
+          title: products.title,
+          url: products.url,
+          image: products.image,
+          sizes: products.sizes,
+        })
+        .from(products)
+        .leftJoin(
+          product_alternate_skus,
+          eq(products.sku, product_alternate_skus.product_sku),
+        )
+        .where(
+          and(
+            or(
+              ilike(products.title, `%${q}%`),
+              ilike(products.sku, `%${q}%`),
+              ilike(product_alternate_skus.alt_sku, `%${q}%`),
+            ),
+            or(
+              isNull(products.sizes),
+              eq(products.sku, sql`${products.sizes}->0->>'sku'`),
+            ),
+          ),
+        )
+        .groupBy(products.sku)
+        .limit(5)) as ProductInfo[];
     }),
   getProductBySku: publicProcedure
     .input(z.object({ sku: z.string() }))
     .query(async ({ input }) => {
-      const stmt = db.prepare(`
-      SELECT p.*
-      FROM products p
-      LEFT JOIN product_alternate_skus a
-        ON p.sku = a.product_sku
-      WHERE p.sku = ?
-        OR a.alt_sku = ?
-      GROUP BY p.sku
-        `);
+      const product = await db
+        .select({
+          sku: products.sku,
+          title: products.title,
+          url: products.url,
+          image: products.image,
+          sizes: products.sizes,
+          prices: products.prices,
+          attributes: products.attributes,
+        })
+        .from(products)
+        .leftJoin(
+          product_alternate_skus,
+          eq(product_alternate_skus.product_sku, products.sku),
+        )
+        .where(
+          or(
+            eq(products.sku, input.sku),
+            eq(product_alternate_skus.alt_sku, input.sku),
+          ),
+        )
+        .limit(1);
 
-      const results = stmt.get(input.sku, input.sku);
-      return results as ProductInfo & { sizes?: string, prices?: string, attributes?: string };
+      return (product[0] as ProductInfo) || null;
     }),
   getProductAvailability: publicProcedure
     .input(z.object({ link: z.string(), size: z.string().optional() }))
@@ -83,7 +102,6 @@ GROUP BY p.sku
       await p.goto(input.link);
       if (input.size) await p.waitForLoadState("networkidle");
       const availability = await getProductAvailability(p, input.size);
-      await p.waitForTimeout(5000);
       await p.close();
       await browser.close();
 

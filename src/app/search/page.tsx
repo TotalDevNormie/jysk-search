@@ -44,6 +44,8 @@ function SearchResults() {
   const search = api.product.searchSuggestions.useQuery({ query });
 
   const products = search?.data || [];
+
+  console.log(products);
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;

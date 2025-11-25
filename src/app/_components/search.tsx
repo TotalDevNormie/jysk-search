@@ -6,27 +6,6 @@ import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
 import type { ProductInfo } from "~/server/services/scrapers/getProductInfo";
 
-function keepFirstSizeInstance(products: ProductInfo[]) {
-  const seen = new Set();
-  const result = [];
-
-  for (const p of products) {
-    const firstSizeSku = p.sizes?.[0]?.sku;
-    if (!firstSizeSku) {
-      result.push(p);
-      continue;
-    }
-
-    if (!seen.has(firstSizeSku)) {
-      seen.add(firstSizeSku);
-    }
-
-    if (seen.has(p.sku)) result.push(p);
-  }
-
-  return result;
-}
-
 export default function SearchBox() {
   const router = useRouter();
   const [term, setTerm] = useState("");
@@ -38,12 +17,16 @@ export default function SearchBox() {
     { enabled: term.length > 2 },
   );
 
+  console.log(search?.data);
+
   const handleSearchRedirect = () => {
-    router.push(`/search?query=${encodeURIComponent(term)}`);
+    if (isSixDigit(term)) {
+      router.push(`/product/${term}`);
+    } else {
+      router.push(`/search?query=${encodeURIComponent(term)}`);
+    }
     inputRef.current?.blur();
   };
-
-  const data = keepFirstSizeInstance(search?.data || []).slice(0, 5);
 
   const handleSelect = (sku: string) => {
     setTerm("");
@@ -82,7 +65,10 @@ export default function SearchBox() {
         placeholder="Search..."
       />
 
-      <button className="border-gray flex cursor-pointer gap-4 border-l-2 p-4" onClick={handleSearchRedirect}>
+      <button
+        className="border-gray flex cursor-pointer gap-4 border-l-2 p-4"
+        onClick={handleSearchRedirect}
+      >
         <Search />
         Meklēt
       </button>
@@ -90,12 +76,12 @@ export default function SearchBox() {
       {focus && search?.data && search?.data?.length > 0 && (
         <div className="border-gray absolute top-full grid w-full border-t-2 bg-white">
           {!isSixDigit(term) &&
-            data.map((item) => (
+            search.data.map((item) => (
               <SearchItem item={item} handleSelect={handleSelect} />
             ))}
-          {isSixDigit(term) && search.data.find((p: ProductInfo) => p.sku === term) &&(
+          {isSixDigit(term) && search.data.find((p) => p.sku === term) && (
             <SearchItem
-              item={search.data.find((p: ProductInfo) => p.sku === term)!}
+              item={search.data.find((p) => p.sku === term)!}
               withSize
               handleSelect={handleSelect}
             />
@@ -111,13 +97,13 @@ const SearchItem = ({
   handleSelect,
   withSize,
 }: {
-  item: ProductInfo;
+  item: Omit<ProductInfo, "attributes" | "prices">;
   handleSelect: (sku: string) => void;
   withSize?: boolean;
 }) => (
   <div
     onMouseDown={() => handleSelect(item.sku)}
-    key={item.sku+"-search"}
+    key={item.sku + "-search"}
     className="border-gray flex cursor-pointer gap-4 border-b-2 p-4"
   >
     <Image
@@ -136,7 +122,12 @@ const SearchItem = ({
           </span>
         )}
       </p>
-      <p className="text-gray-500">SKU: {item.sizes && !withSize ? item?.sizes.map((s) => s.sku).join(", ") : item.sku}</p>
+      <p className="text-gray-500">
+        SKU:{" "}
+        {item.sizes && !withSize
+          ? item?.sizes.map((s) => s.sku).join(", ")
+          : item.sku}
+      </p>
     </div>
   </div>
 );
