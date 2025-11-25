@@ -44,7 +44,7 @@ export default async function ProductPage({ params }: Props) {
         <h1 className="text-3xl font-bold">{data.title}</h1>
         <span className="text-nowrap">SKU: {data.sku}</span>
       </div>
-      <Suspense fallback={<Spinner />}>
+      <Suspense>
         <Cupon availibility={availability} />
       </Suspense>
       <div>
