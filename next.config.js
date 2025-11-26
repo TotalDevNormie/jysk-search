@@ -10,9 +10,9 @@ const config = {
       },
     ],
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
 };
 
 export default config;

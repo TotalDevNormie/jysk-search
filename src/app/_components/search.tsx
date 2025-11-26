@@ -62,7 +62,7 @@ export default function SearchBox() {
           }
         }}
         className="w-full p-4"
-        placeholder="Search..."
+        placeholder="Meklēt..."
       />
 
       <button
@@ -77,7 +77,11 @@ export default function SearchBox() {
         <div className="border-gray absolute top-full grid w-full border-t-2 bg-white">
           {!isSixDigit(term) &&
             search.data.map((item) => (
-              <SearchItem item={item} handleSelect={handleSelect} />
+              <SearchItem
+                key={item.sku + "-search"}
+                item={item}
+                handleSelect={handleSelect}
+              />
             ))}
           {isSixDigit(term) && search.data.find((p) => p.sku === term) && (
             <SearchItem
@@ -103,7 +107,6 @@ const SearchItem = ({
 }) => (
   <div
     onMouseDown={() => handleSelect(item.sku)}
-    key={item.sku + "-search"}
     className="border-gray flex cursor-pointer gap-4 border-b-2 p-4"
   >
     <Image
