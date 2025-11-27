@@ -57,6 +57,7 @@ WORKDIR /app
 
 # Set environment to production
 ENV NODE_ENV=production
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 # Copy built application from builder
 COPY --from=builder /app/next.config.js ./
@@ -68,15 +69,16 @@ COPY --from=builder /app/public ./public
 # Copy node_modules (needed for Playwright)
 COPY --from=builder /app/node_modules ./node_modules
 
-# Install Playwright browsers
-RUN bunx playwright install chromium firefox webkit
-
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs && \
-    chown -R nextjs:nodejs /app
+    mkdir -p /home/nextjs/.cache && \
+    chown -R nextjs:nodejs /app /home/nextjs
 
 USER nextjs
+
+# Install Playwright browsers as the nextjs user
+RUN bunx playwright install chromium firefox webkit
 
 # Expose the port
 EXPOSE 3000
