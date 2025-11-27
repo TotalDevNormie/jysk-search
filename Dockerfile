@@ -80,9 +80,6 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy DB file if it exists
-COPY --from=builder /app/scraper.db ./scraper.db
-
 USER nextjs
 
 EXPOSE 3000
