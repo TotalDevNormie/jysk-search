@@ -81,8 +81,8 @@ COPY --from=builder /app/node_modules ./node_modules
 
 
 # Install Playwright globally + install Chromium
-RUN npm install -g playwright && \
-    playwright install chromium
+RUN bun install playwright && \
+    bunx playwright install chromium
 
 USER nextjs
 
