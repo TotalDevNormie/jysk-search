@@ -1,46 +1,29 @@
-# ============================
-# BUILDER STAGE
-# ============================
-FROM oven/bun:1-debian AS builder  # <-- Stage is named 'builder'
+# Build stage
+FROM node:20-slim AS builder
+
+# Install OpenSSL for Prisma/Drizzle compatibility
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install build tools for native modules
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    npm \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy package files first
-COPY package.json bun.lock* ./
+# Copy package files
+COPY package*.json ./
 
 # Install dependencies
-RUN bun install --frozen-lockfile
+RUN npm ci
 
-# Copy source files
+# Copy source code
 COPY . .
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+# Build the application
+RUN npm run build
 
-# Install Playwright's Chromium browser
-RUN bunx playwright install chromium
+# Production stage
+FROM node:20-slim AS runner
 
-# Build Next.js app
-RUN bun run build
-
-# ============================
-# RUNNER STAGE
-# ============================
-FROM oven/bun:1-debian AS runner
-
-WORKDIR /app
-
-# Runtime dependencies for Next.js and Playwright/Chromium
+# Install Playwright dependencies and browsers
 RUN apt-get update && apt-get install -y \
-    dumb-init \
+    # Required for Playwright
     libnss3 \
     libnspr4 \
     libatk1.0-0 \
@@ -54,34 +37,52 @@ RUN apt-get update && apt-get install -y \
     libxfixes3 \
     libxrandr2 \
     libgbm1 \
+    libpango-1.0-0 \
+    libcairo2 \
     libasound2 \
     libatspi2.0-0 \
-    libxshmfence1 \
+    # Additional dependencies
+    wget \
+    ca-certificates \
     fonts-liberation \
-    fonts-noto-color-emoji \
+    libappindicator3-1 \
+    libu2f-udev \
+    libvulkan1 \
+    xdg-utils \
+    # OpenSSL for database connectivity
+    openssl \
     && rm -rf /var/lib/apt/lists/*
 
+WORKDIR /app
+
+# Set environment to production
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
 
-# Create non-root user
-RUN groupadd --system --gid 1001 nodejs && \
-    useradd --system --uid 1001 --gid nodejs nextjs
-
-# Copy built app and dependencies from builder stage
+# Copy built application from builder
 COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json 
-# Line 47: This now correctly references the local stage named 'builder'
+COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/node_modules ./node_modules 
+COPY --from=builder /app/public ./public
+
+# Copy node_modules (needed for Playwright)
+COPY --from=builder /app/node_modules ./node_modules
+
+# Install Playwright browsers
+RUN npx playwright install chromium firefox webkit
+
+# Create a non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    chown -R nextjs:nodejs /app
 
 USER nextjs
 
+# Expose the port
 EXPOSE 3000
 
-# Use dumb-init
-CMD ["dumb-init", "node", "server.js"]
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Start the application
+CMD ["node", "server.js"]
