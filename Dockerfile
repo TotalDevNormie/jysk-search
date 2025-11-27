@@ -1,11 +1,12 @@
 # ============================
+# ============================
 # BUILDER STAGE
 # ============================
 FROM oven/bun:1-debian AS builder
 
 WORKDIR /app
 
-# Install build tools for native modules (better-sqlite3, Playwright)
+# Install build tools for native modules
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
@@ -13,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files first (cache layer)
+# Copy package files first
 COPY package.json bun.lock* ./
 
 # Install dependencies
@@ -28,9 +29,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Build Next.js app
 RUN bun run build
 
-# Install Playwright + Chromium in builder
+# Install Playwright + Chromium to a shared path
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright-browsers
+RUN mkdir -p /ms-playwright-browsers
 RUN bun install playwright && bunx playwright install chromium
-
 
 # ============================
 # RUNNER STAGE
@@ -39,7 +41,7 @@ FROM oven/bun:1-debian AS runner
 
 WORKDIR /app
 
-# Install runtime deps for Playwright
+# Runtime deps for Playwright
 RUN apt-get update && apt-get install -y \
     dumb-init \
     libnss3 \
@@ -66,23 +68,24 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright-browsers
 
 # Create non-root user
 RUN groupadd --system --gid 1001 nodejs && \
     useradd --system --uid 1001 --gid nodejs nextjs
 
-# Copy built Next.js app and node_modules from builder
+# Copy built app and dependencies from builder
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /ms-playwright-browsers /ms-playwright-browsers
 
 USER nextjs
 
 EXPOSE 3000
 
-# Use dumb-init to handle signals
+# Use dumb-init
 CMD ["dumb-init", "node", "server.js"]
