@@ -1,29 +1,35 @@
 # Build stage
 FROM oven/bun:1 AS builder
 
-# Install OpenSSL for database compatibility
-RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
 # Copy package files
 COPY package.json bun.lockb* ./
 
-# Install dependencies
-RUN bun install --frozen-lockfile || bun install
+# Install dependencies (production only to reduce size)
+RUN bun install --frozen-lockfile --production || bun install --production
 
 # Copy source code
 COPY . .
 
+# Reinstall with dev deps for build
+RUN bun install --frozen-lockfile || bun install
+
 # Build the application
 RUN bun run build
 
-# Production stage
-FROM oven/bun:1-slim AS runner
+# Install production dependencies only
+RUN rm -rf node_modules && \
+    bun install --frozen-lockfile --production || bun install --production
 
-# Install Playwright dependencies and browsers
+# Production stage
+FROM debian:bookworm-slim AS runner
+
+# Install Bun
+COPY --from=oven/bun:1 /usr/local/bin/bun /usr/local/bin/bun
+
+# Install only essential dependencies for Chromium
 RUN apt-get update && apt-get install -y \
-    # Required for Playwright
     libnss3 \
     libnspr4 \
     libatk1.0-0 \
@@ -40,18 +46,11 @@ RUN apt-get update && apt-get install -y \
     libpango-1.0-0 \
     libcairo2 \
     libasound2 \
-    libatspi2.0-0 \
-    # Additional dependencies
-    wget \
     ca-certificates \
     fonts-liberation \
-    libappindicator3-1 \
-    libu2f-udev \
-    libvulkan1 \
-    xdg-utils \
-    # OpenSSL for database connectivity
-    openssl \
-    && rm -rf /var/lib/apt/lists/*
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 WORKDIR /app
 
@@ -65,17 +64,16 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-
-# Copy node_modules (needed for Playwright)
 COPY --from=builder /app/node_modules ./node_modules
 
-# Create directory for Playwright browsers and install them
+# Install only Chromium browser (smallest browser option)
 RUN mkdir -p /ms-playwright && \
-    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright bunx playwright install --with-deps chromium firefox webkit
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright /usr/local/bin/bun x playwright install chromium && \
+    rm -rf /tmp/* /var/tmp/*
 
 # Create a non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --gid nodejs nextjs && \
     mkdir -p /home/nextjs/.cache && \
     chown -R nextjs:nodejs /app /home/nextjs /ms-playwright
 
