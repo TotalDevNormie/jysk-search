@@ -16,17 +16,11 @@ export const getProductAvailability = async (
   page: Page,
   size?: string,
 ): Promise<ProductAvailability> => {
-  const stores = await getAvailability(page, size),
-
-  // let cupon: string = "";
-  //
-  // if (cuponLink) {
-  //   cupon = cuponLink!.split(">>")[0]?.trim() as string;
-  // }
+  const stores = await getAvailability(page, size);
 
   return {
     stores,
-    cupon : ""
+    cupon: "",
   };
 };
 
