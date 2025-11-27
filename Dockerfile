@@ -79,8 +79,6 @@ COPY --from=builder /app/.next/static ./.next/static
 # Copy node_modules (Playwright CLI lives here)
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy DB file if exists
-COPY --from=builder /app/scraper.db ./scraper.db
 
 # Install Playwright globally + install Chromium
 RUN npm install -g playwright && \
