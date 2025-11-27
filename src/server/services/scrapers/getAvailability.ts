@@ -1,5 +1,4 @@
 import type { Page } from "playwright";
-import { safeAttr } from "./safeAttr.ts";
 
 export type ProductAvailability = {
   stores: StoreAvailability[];
@@ -27,7 +26,7 @@ export const getProductAvailability = async (
 
   return {
     stores,
-    cupon : "",
+    cupon : ""
   };
 };
 
