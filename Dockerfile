@@ -1,9 +1,11 @@
-# Build stage
+# ============================
+# BUILD STAGE
+# ============================
 FROM oven/bun:1-debian AS builder
 
 WORKDIR /app
 
-# Install build dependencies
+# Install required tools for building
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
@@ -11,31 +13,33 @@ RUN apt-get update && apt-get install -y \
     npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files
-COPY package.json bun.lock ./
+# Copy only package files first (better cache)
+COPY package.json bun.lock* ./
 
 # Install dependencies
 RUN bun install --frozen-lockfile
 
-# Copy source files
+# Copy the rest of the app
 COPY . .
 
-# Set environment to production
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Build the application
+# Build Next.js app
 RUN bun run build
 
-# Production stage
+
+# ============================
+# RUNTIME STAGE
+# ============================
 FROM oven/bun:1-debian AS runner
 
 WORKDIR /app
 
-# Install runtime dependencies and Playwright dependencies
+# Install all Playwright system dependencies
 RUN apt-get update && apt-get install -y \
     dumb-init \
-    # Playwright dependencies
+    # Playwright deps
     libnss3 \
     libnspr4 \
     libatk1.0-0 \
@@ -52,7 +56,7 @@ RUN apt-get update && apt-get install -y \
     libasound2 \
     libatspi2.0-0 \
     libxshmfence1 \
-    # Fonts for rendering
+    # Fonts
     fonts-liberation \
     fonts-noto-color-emoji \
     && rm -rf /var/lib/apt/lists/*
@@ -61,34 +65,31 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
-# Create a non-root user
-RUN groupadd --system --gid 1001 nodejs
-RUN useradd --system --uid 1001 --gid nodejs nextjs
+# Create non-root user
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --gid nodejs nextjs
 
-# Copy necessary files from builder
+# Copy standalone output
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
-# Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copy node_modules (Playwright CLI lives here)
+COPY --from=builder /app/node_modules ./node_modules
 
-# Copy node_modules with Playwright browsers
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+# Copy DB file if exists
+COPY --from=builder /app/scraper.db ./scraper.db
 
-# Copy the database file if it exists
-COPY --from=builder --chown=nextjs:nodejs /app/scraper.db ./scraper.db
-
-# Install Playwright Chromium browser
-RUN bunx playwright install chromium
+# Install Playwright globally + install Chromium
+RUN npm install -g playwright && \
+    playwright install chromium
 
 USER nextjs
 
 EXPOSE 3000
-
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Use dumb-init to handle signals properly
 CMD ["dumb-init", "node", "server.js"]

@@ -107,4 +107,9 @@ export const productRouter = createTRPCRouter({
 
       return availability;
     }),
+
+  test: publicProcedure.query(async () => {
+    console.log("test");
+    return "test";
+  }),
 });
