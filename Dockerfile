@@ -1,11 +1,11 @@
 # ============================
-# BUILD STAGE
+# BUILDER STAGE
 # ============================
 FROM oven/bun:1-debian AS builder
 
 WORKDIR /app
 
-# Install required tools for building
+# Install build tools for native modules (better-sqlite3, Playwright)
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
@@ -13,13 +13,13 @@ RUN apt-get update && apt-get install -y \
     npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy only package files first (better cache)
+# Copy package files first (cache layer)
 COPY package.json bun.lock* ./
 
 # Install dependencies
 RUN bun install --frozen-lockfile
 
-# Copy the rest of the app
+# Copy source files
 COPY . .
 
 ENV NODE_ENV=production
@@ -28,18 +28,20 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Build Next.js app
 RUN bun run build
 
+# Install Playwright + Chromium in builder
+RUN bun install playwright && bunx playwright install chromium
+
 
 # ============================
-# RUNTIME STAGE
+# RUNNER STAGE
 # ============================
 FROM oven/bun:1-debian AS runner
 
 WORKDIR /app
 
-# Install all Playwright system dependencies
+# Install runtime deps for Playwright
 RUN apt-get update && apt-get install -y \
     dumb-init \
-    # Playwright deps
     libnss3 \
     libnspr4 \
     libatk1.0-0 \
@@ -56,38 +58,34 @@ RUN apt-get update && apt-get install -y \
     libasound2 \
     libatspi2.0-0 \
     libxshmfence1 \
-    # Fonts
     fonts-liberation \
     fonts-noto-color-emoji \
     && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
 # Create non-root user
 RUN groupadd --system --gid 1001 nodejs && \
     useradd --system --uid 1001 --gid nodejs nextjs
 
-# Copy standalone output
+# Copy built Next.js app and node_modules from builder
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-
-# Copy node_modules (Playwright CLI lives here)
 COPY --from=builder /app/node_modules ./node_modules
 
-
-# Install Playwright globally + install Chromium
-RUN bun install playwright && \
-    bunx playwright install chromium
+# Copy DB file if it exists
+COPY --from=builder /app/scraper.db ./scraper.db
 
 USER nextjs
 
 EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
 
+# Use dumb-init to handle signals
 CMD ["dumb-init", "node", "server.js"]
