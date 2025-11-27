@@ -1,12 +1,44 @@
 # ============================
-# RUNNER STAGE (Revised)
+# BUILDER STAGE
+# ============================
+FROM oven/bun:1-debian AS builder  # <-- Stage is named 'builder'
+
+WORKDIR /app
+
+# Install build tools for native modules
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy package files first
+COPY package.json bun.lock* ./
+
+# Install dependencies
+RUN bun install --frozen-lockfile
+
+# Copy source files
+COPY . .
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Install Playwright's Chromium browser
+RUN bunx playwright install chromium
+
+# Build Next.js app
+RUN bun run build
+
+# ============================
+# RUNNER STAGE
 # ============================
 FROM oven/bun:1-debian AS runner
 
 WORKDIR /app
 
 # Runtime dependencies for Next.js and Playwright/Chromium
-# ... (rest of the apt-get installs remain the same)
 RUN apt-get update && apt-get install -y \
     dumb-init \
     libnss3 \
@@ -41,9 +73,8 @@ RUN groupadd --system --gid 1001 nodejs && \
 # Copy built app and dependencies from builder stage
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
-# 🟢 CORRECTED LINE HERE
 COPY --from=builder /app/package.json ./package.json 
-# --------------------
+# Line 47: This now correctly references the local stage named 'builder'
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules ./node_modules 
