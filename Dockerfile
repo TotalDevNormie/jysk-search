@@ -69,16 +69,17 @@ COPY --from=builder /app/public ./public
 # Copy node_modules (needed for Playwright)
 COPY --from=builder /app/node_modules ./node_modules
 
+# Create directory for Playwright browsers and install them
+RUN mkdir -p /ms-playwright && \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright bunx playwright install chromium firefox webkit
+
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs && \
     mkdir -p /home/nextjs/.cache && \
-    chown -R nextjs:nodejs /app /home/nextjs
+    chown -R nextjs:nodejs /app /home/nextjs /ms-playwright
 
 USER nextjs
-
-# Install Playwright browsers as the nextjs user
-RUN bunx playwright install chromium firefox webkit
 
 # Expose the port
 EXPOSE 3000
