@@ -1,25 +1,25 @@
 # Build stage
-FROM node:20-slim AS builder
+FROM oven/bun:1 AS builder
 
-# Install OpenSSL for Prisma/Drizzle compatibility
+# Install OpenSSL for database compatibility
 RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json bun.lockb* ./
 
 # Install dependencies
-RUN npm ci
+RUN bun install --frozen-lockfile || bun install
 
 # Copy source code
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN bun run build
 
 # Production stage
-FROM node:20-slim AS runner
+FROM oven/bun:1-slim AS runner
 
 # Install Playwright dependencies and browsers
 RUN apt-get update && apt-get install -y \
@@ -60,7 +60,7 @@ ENV NODE_ENV=production
 
 # Copy built application from builder
 COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/package.json ./
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
@@ -69,7 +69,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
 # Install Playwright browsers
-RUN npx playwright install chromium firefox webkit
+RUN bunx playwright install chromium firefox webkit
 
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs && \
@@ -85,4 +85,4 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Start the application
-CMD ["node", "server.js"]
+CMD ["bun", "run", "server.js"]
