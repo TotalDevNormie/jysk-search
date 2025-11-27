@@ -71,7 +71,7 @@ COPY --from=builder /app/node_modules ./node_modules
 
 # Create directory for Playwright browsers and install them
 RUN mkdir -p /ms-playwright && \
-    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright bunx playwright install chromium firefox webkit
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright bunx playwright install --with-deps chromium firefox webkit
 
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs && \
