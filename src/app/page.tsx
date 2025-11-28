@@ -1,6 +1,5 @@
-import { LatestPost } from "~/app/_components/post";
 import { api, HydrateClient } from "~/trpc/server";
-import SearchBox from "./_components/search";
+import { Suspense } from "react";
 
 export default async function Home() {
   return (
@@ -14,7 +13,16 @@ export default async function Home() {
             sazinaties ar mani
           </p>
         </div>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Test />
+        </Suspense>
       </div>
     </HydrateClient>
   );
 }
+
+const Test = async () => {
+  const res = await api.product.searchSuggestions({ query: "jonstrup" });
+  console.log(res);
+  return <pre>{JSON.stringify(res, null, 2)}</pre>;
+};

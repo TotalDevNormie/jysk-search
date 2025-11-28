@@ -19,37 +19,42 @@ export const productRouter = createTRPCRouter({
   searchSuggestions: publicProcedure
     .input(z.object({ query: z.string() }))
     .query(async ({ input }) => {
-      const q = input.query.trim();
-      if (!q) return [];
+      try {
+        const q = input.query.trim();
+        if (!q) return [];
 
-      return (await db
-        .select({
-          sku: products.sku,
-          title: products.title,
-          url: products.url,
-          image: products.image,
-          sizes: products.sizes,
-        })
-        .from(products)
-        .leftJoin(
-          product_alternate_skus,
-          eq(products.sku, product_alternate_skus.product_sku),
-        )
-        .where(
-          and(
-            or(
-              ilike(products.title, `%${q}%`),
-              ilike(products.sku, `%${q}%`),
-              ilike(product_alternate_skus.alt_sku, `%${q}%`),
+        return (await db
+          .select({
+            sku: products.sku,
+            title: products.title,
+            url: products.url,
+            image: products.image,
+            sizes: products.sizes,
+          })
+          .from(products)
+          .leftJoin(
+            product_alternate_skus,
+            eq(products.sku, product_alternate_skus.product_sku),
+          )
+          .where(
+            and(
+              or(
+                ilike(products.title, `%${q}%`),
+                ilike(products.sku, `%${q}%`),
+                ilike(product_alternate_skus.alt_sku, `%${q}%`),
+              ),
+              or(
+                isNull(products.sizes),
+                eq(products.sku, sql`${products.sizes}->0->>'sku'`),
+              ),
             ),
-            or(
-              isNull(products.sizes),
-              eq(products.sku, sql`${products.sizes}->0->>'sku'`),
-            ),
-          ),
-        )
-        .groupBy(products.sku)
-        .limit(5)) as ProductInfo[];
+          )
+          .groupBy(products.sku)
+          .limit(5)) as ProductInfo[];
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
     }),
   getProductBySku: publicProcedure
     .input(z.object({ sku: z.string() }))
