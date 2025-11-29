@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 import { getProductInfo } from "./getProductInfo.ts";
-import { eq, sql, and, notExists } from "drizzle-orm";
+import { eq, notExists } from "drizzle-orm";
 import { db } from "~/server/db/index.ts";
 import {
   product_alternate_skus,
@@ -62,7 +62,7 @@ export const scrapeAllProducts = async () => {
               prices: info.prices,
               attributes: info.attributes,
               sizes: info.sizes,
-              scrapedAt: new Date(),
+              scraped_at: new Date(),
             })
             .onConflictDoUpdate({
               target: products.sku,
@@ -74,7 +74,7 @@ export const scrapeAllProducts = async () => {
                 prices: info.prices,
                 attributes: info.attributes,
                 sizes: info.sizes,
-                scrapedAt: new Date(),
+                scraped_at: new Date(),
               },
             });
 
