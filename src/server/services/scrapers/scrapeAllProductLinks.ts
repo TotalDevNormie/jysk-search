@@ -1,7 +1,9 @@
 import { chromium } from "playwright";
 import { getSubcategorieLinks } from "./getSubcategorieLinks.ts";
 import { getProductLinks } from "./getProductLinks.ts";
-import { db } from "../db.ts";
+import { eq, sql } from "drizzle-orm";
+import { categories, product_links } from "~/server/db/schema.ts";
+import { db } from "~/server/db/index.ts";
 
 const CONCURRENCY = 1;
 const MAX_RETRIES = 3;
@@ -23,25 +25,26 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
     timezoneId: "Europe/Riga",
   });
 
-  // Insert categories into DB if not exist
-  const insertCategory = db.prepare(
-    `INSERT OR IGNORE INTO categories (url) VALUES (?)`,
-  );
-  categoryLinks.forEach((url) => insertCategory.run(url));
-
   const failedCategories: string[] = [];
   let totalSubcategories = 0;
   let totalProductLinks = 0;
 
   // Scrape one category
   const scrapeCategory = async (categoryUrl: string) => {
-    const p = await context.newPage();
+    const page = await context.newPage();
     try {
-      const subcategories = await getSubcategorieLinks(categoryUrl, p);
+      const subcategories = await getSubcategorieLinks(categoryUrl, page);
       totalSubcategories += subcategories.length;
+      await page.close();
 
-      await p.close();
-      // Live log
+      // Insert subcategories into DB
+      if (subcategories.length > 0) {
+        await db
+          .insert(categories)
+          .values(subcategories.map((url) => ({ url })))
+          .onConflictDoNothing();
+      }
+
       console.clear();
       console.log(`Last scraped category: ${categoryUrl}`);
       console.log(`Total subcategories fetched: ${totalSubcategories}`);
@@ -50,44 +53,40 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
 
       return subcategories;
     } catch (err) {
-      await p.close();
-
+      await page.close();
       failedCategories.push(categoryUrl);
+
       console.clear();
       console.log(`Failed category: ${categoryUrl}`);
       console.log(`Total subcategories fetched: ${totalSubcategories}`);
       console.log(`Total product links saved: ${totalProductLinks}`);
       console.log(`Failed categories so far: ${failedCategories.length}`);
+
       return [];
     }
   };
 
   const subcategoriesNested = await Promise.all(
-    categoryLinks.map(scrapeCategory),
+    categoryLinks.map(scrapeCategory)
   );
   const allSubcategories = subcategoriesNested.flat();
 
-  // Update categories status
-  const updateCategoryStatus = db.prepare(
-    `UPDATE categories
-     SET status = ?, last_attempt = CURRENT_TIMESTAMP, attempts = attempts + 1
-     WHERE url = ?`,
-  );
-  categoryLinks.forEach((url) =>
-    updateCategoryStatus.run(
-      failedCategories.includes(url) ? "failed" : "done",
-      url,
-    ),
-  );
+  // Update category status
+  for (const url of categoryLinks) {
+    await db
+      .update(categories)
+      .set({
+        status: failedCategories.includes(url) ? "failed" : "done",
+        last_attempt: new Date(),
+        attempts: sql`${categories.attempts} + 1`, })
+      .where(eq(categories.url, url));
+  }
+
   await browser.close();
 
   // Fetch product links concurrently
   const queue = [...allSubcategories];
   const results: string[] = [];
-
-  const insertProduct = db.prepare(
-    `INSERT OR IGNORE INTO product_links (url, category_url, scraped_at) VALUES (?, ?, CURRENT_TIMESTAMP)`,
-  );
 
   browser = await chromium.launch({
     headless: true,
@@ -109,19 +108,21 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
     while (queue.length > 0) {
       const url = queue.shift();
       if (!url) continue;
-      console.log(url);
-      const p = await context.newPage();
+      const page = await context.newPage();
 
       try {
-        const links = await getProductLinks(p, url);
+        const links = await getProductLinks(page, url);
 
-        links.forEach((link) => {
-          insertProduct.run(link, url);
+        for (const link of links) {
+          await db
+            .insert(product_links)
+            .values({ url: link, category_url: url })
+            .onConflictDoNothing();
           totalProductLinks++;
-        });
+        }
+
         results.push(...links);
 
-        // Live console update
         console.clear();
         console.log(`Last scraped product page: ${url}`);
         console.log(`Total subcategories fetched: ${totalSubcategories}`);
@@ -132,7 +133,7 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
         console.log(`Failed product page: ${url}`);
         console.log(err);
       }
-      await p.close();
+      await page.close();
     }
   });
 
@@ -140,23 +141,22 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
   await browser.close();
 
   // Retry failed categories up to MAX_RETRIES
-  const retryCategories = failedCategories.filter((url) => {
-    const row = db
-      .prepare(`SELECT attempts FROM categories WHERE url = ?`)
-      .get(url) as { attempts: number } | undefined;
+  const retryCategories: string[] = [];
+  for (const url of failedCategories) {
+    const row = await db
+      .select({ attempts: categories.attempts })
+      .from(categories)
+      .where(eq(categories.url, url))
+      .limit(1);
 
-    return row && row.attempts < MAX_RETRIES;
-  });
+    if (row[0]?.attempts && row[0]?.attempts < MAX_RETRIES) retryCategories.push(url);
+  }
+
   if (retryCategories.length > 0) {
     console.log("Retrying failed categories:", retryCategories);
     const retryResults = await exports.default(retryCategories);
     results.push(...retryResults);
   }
 
-  // const page = await context.newPage();
-  //
-  // const productLinks = await getProductLinks(page, "https://www.jysk.lv/aizkari/aizkari.html");
-  // console.log(productLinks);
-  // await page.close();
   return results;
 };

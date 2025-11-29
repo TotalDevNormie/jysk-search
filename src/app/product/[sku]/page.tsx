@@ -34,9 +34,8 @@ export default async function ProductPage({ params }: Props) {
         }
       : { link: data.url };
   const availability = data?.url
-    ? api.product.getProductAvailability(object)
+    ? api.scrape.getProductAvailability(object)
     : null;
-  // console.log(availability, object);
   const prices = data?.prices;
   return (
     <div className="grid gap-8 p-4">
@@ -44,9 +43,9 @@ export default async function ProductPage({ params }: Props) {
         <h1 className="text-3xl font-bold">{data.title}</h1>
         <span className="text-nowrap">SKU: {data.sku}</span>
       </div>
-      <Suspense>
-        <Cupon availibility={availability} />
-      </Suspense>
+      {/* <Suspense> */}
+      {/*   <Cupon availibility={availability} /> */}
+      {/* </Suspense> */}
       <div>
         <h2 className="flex items-center gap-2">
           Pieejamība {store}:{" "}
@@ -153,20 +152,6 @@ export default async function ProductPage({ params }: Props) {
         </Suspense>
       </Accordion>
       {/* other product info */}
-    </div>
-  );
-}
-
-async function Cupon({
-  availibility,
-}: {
-  availibility: Promise<ProductAvailability> | null;
-}) {
-  const availabilityReady = await availibility;
-  if (!availabilityReady) return null;
-  return (
-    <div className="text-md fixed bottom-0 -ml-4 w-full bg-black p-4 text-center text-white">
-      {availabilityReady?.cupon}
     </div>
   );
 }

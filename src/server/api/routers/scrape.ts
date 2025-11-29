@@ -1,10 +1,8 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { chromium } from "playwright";
-import { getSubcategorieLinks } from "~/server/services/scrapers/getSubcategorieLinks";
-import { getProductLinks } from "~/server/services/scrapers/getProductLinks";
-import { getProductInfo } from "~/server/services/scrapers/getProductInfo";
 import { safeGoto } from "~/server/utils/safeGoto.ts";
+import { getProductAvailability } from "~/server/services/scrapers/getAvailability";
 
 const categoryLinks = [
   "https://www.jysk.lv/darzam.html",
@@ -56,56 +54,33 @@ export const scrapeRouter = createTRPCRouter({
       return { title, screenshot };
     }),
 
-  subcategories: publicProcedure.query(async () => {
-    console.log("prefetch");
-    // const links = await getSubcategorieLinks(
-    //   "https://www.jysk.lv/birojam.html",
-    // );
-    //
-    // if (!links || links.length === 0) {
-    //   return { links, error: "No subcategories found" };
-    // }
-    //
-    const browser = await chromium.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-
-    const context = await browser.newContext({
-      userAgent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    });
-
-    const page = await context.newPage();
-    await safeGoto(page, "https://www.jysk.lv/aizkari/aizkari.html");
-
-    // const productLinks = await getProductLinks(page);
-    //
-    return {
-      // links: productLinks.allLinks,
-      // subcategories: links,
-      subcategories: [],
-      // screenshot: productLinks.screenshot,
-    };
-  }),
-
-  product: publicProcedure
-    .input(z.object({ productLink: z.string() }))
+  getProductAvailability: publicProcedure
+    .input(z.object({ link: z.string(), size: z.string().optional() }))
     .query(async ({ input }) => {
-      const browser = await chromium.launch({
+      let browser = await chromium.launch({
         headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-blink-features=AutomationControlled",
+        ],
       });
 
-      const context = await browser.newContext({
+      let context = await browser.newContext({
         userAgent:
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        locale: "lv-LV",
+        timezoneId: "Europe/Riga",
       });
 
-      const page = await context.newPage();
-      await safeGoto(page, input.productLink);
+      const p = await context.newPage();
+      await p.goto(input.link);
+      if (input.size) await p.waitForLoadState("networkidle");
+      const availability = await getProductAvailability(p, input.size);
+      await p.close();
+      await browser.close();
 
-      const productInfo = await getProductInfo(page);
-      return { productInfo };
+      return availability;
     }),
+
 });

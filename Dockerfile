@@ -25,10 +25,10 @@ RUN rm -rf node_modules && \
 # Production stage
 FROM debian:bookworm-slim AS runner
 
-# Install Bun
+# Install Bun runtime
 COPY --from=oven/bun:1 /usr/local/bin/bun /usr/local/bin/bun
 
-# Install only essential dependencies for Chromium
+# Install required dependencies for Chromium only (NO sqlite)
 RUN apt-get update && apt-get install -y \
     libnss3 \
     libnspr4 \
@@ -54,11 +54,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Set environment to production
+# Environment
 ENV NODE_ENV=production
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-# Copy built application from builder
+# Copy app
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/.next/standalone ./
@@ -66,12 +66,12 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
-# Install only Chromium browser (smallest browser option)
+# Install Chromium only
 RUN mkdir -p /ms-playwright && \
-    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright /usr/local/bin/bun x playwright install chromium && \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright bun x playwright install chromium && \
     rm -rf /tmp/* /var/tmp/*
 
-# Create a non-root user
+# Create non-root user
 RUN groupadd --system --gid 1001 nodejs && \
     useradd --system --uid 1001 --gid nodejs nextjs && \
     mkdir -p /home/nextjs/.cache && \
@@ -79,11 +79,8 @@ RUN groupadd --system --gid 1001 nodejs && \
 
 USER nextjs
 
-# Expose the port
 EXPOSE 3000
-
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Start the application
 CMD ["bun", "run", "server.js"]

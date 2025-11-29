@@ -40,18 +40,12 @@ function SearchResults() {
   const params = useSearchParams();
   const query = params.get("query") || "";
   const [currentPage, setCurrentPage] = useState(1);
-
-  const search = api.product.searchSuggestions.useQuery({ query });
-
+  const search = api.product.searchResult.useQuery({ query });
   const products = search?.data || [];
-
-  console.log(products);
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
-
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentProducts = products.slice(startIndex, endIndex);
-
   const getPageNumbers = () => {
     const pages = [];
     const showEllipsisStart = currentPage > 3;

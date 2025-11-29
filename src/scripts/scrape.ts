@@ -16,7 +16,6 @@ import scrapeAllProductLinks from "../server/services/scrapers/scrapeAllProductL
 
   const result = await scrapeAllProductLinks(categoryLinks);
   console.log(result.length, "links found");
-  console.log(result);
 
   process.exit(0);
 })();
