@@ -1,9 +1,12 @@
 import { chromium } from "playwright";
 import { getProductInfo } from "./getProductInfo.ts";
-import { products } from "../schema.ts";
 import { eq, sql, and, notExists } from "drizzle-orm";
 import { db } from "~/server/db/index.ts";
-import { product_alternate_skus, product_links } from "~/server/db/schema.ts";
+import {
+  product_alternate_skus,
+  product_links,
+  products,
+} from "~/server/db/schema.ts";
 
 const CONCURRENCY = 3;
 
@@ -17,7 +20,7 @@ export const scrapeAllProducts = async () => {
           .select({ url: products.url })
           .from(products)
           .where(eq(products.url, product_links.url)),
-      )
+      ),
     );
 
   if (!productRows.length) return [];
@@ -77,7 +80,7 @@ export const scrapeAllProducts = async () => {
 
           // Extract alternate SKUs from attributes.SKU
           const skuAttr = info?.attributes?.find(
-            (a) => a.label.toLowerCase() === "sku"
+            (a) => a.label.toLowerCase() === "sku",
           )?.data;
 
           if (skuAttr) {
