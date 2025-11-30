@@ -1,6 +1,5 @@
 /** @type {import("next").NextConfig} */
 const config = {
-  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -12,6 +11,9 @@ const config = {
   },
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  experimental: {
+    serverMinification: false, // optional but helps debugging
   },
 };
 

@@ -12,7 +12,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
-    "start": "next start",
+    "start": "node server.js",
     "typecheck": "tsc --noEmit",
     "scrape": "ts-node --transpileOnly src/scripts/scrape.ts",
     "scrape-products": "ts-node --transpileOnly src/scripts/scrapeProducts.ts"
