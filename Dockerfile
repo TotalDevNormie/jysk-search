@@ -6,14 +6,15 @@ WORKDIR /app
 # Copy package files
 COPY package.json bun.lockb* ./
 
-# Install dependencies (production only to reduce size)
+# Install dependencies (prod to reduce size)
 RUN bun install --frozen-lockfile --production || bun install --production
 
 # Copy source code
 COPY . .
 
 # Reinstall with dev deps for build
-RUN bun install --frozen-lockfile || bun install
+RUN rm -rf node_modules && \
+    bun install --frozen-lockfile || bun install
 
 # Build the application
 RUN bun run build
@@ -22,13 +23,14 @@ RUN bun run build
 RUN rm -rf node_modules && \
     bun install --frozen-lockfile --production || bun install --production
 
-# Production stage
+
+# -------- PRODUCTION IMAGE --------
 FROM debian:bookworm-slim AS runner
 
 # Install Bun runtime
 COPY --from=oven/bun:1 /usr/local/bin/bun /usr/local/bin/bun
 
-# Install required dependencies for Chromium only (NO sqlite)
+# Install minimal dependencies for Chromium
 RUN apt-get update && apt-get install -y \
     libnss3 \
     libnspr4 \
@@ -54,19 +56,18 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Environment
 ENV NODE_ENV=production
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-# Copy app
+# Copy app build artifacts (NON-STANDALONE)
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/package.json ./
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/server.js ./server.js
 
-# Install Chromium only
+# Install Chromium browser only
 RUN mkdir -p /ms-playwright && \
     PLAYWRIGHT_BROWSERS_PATH=/ms-playwright bun x playwright install chromium && \
     rm -rf /tmp/* /var/tmp/*
@@ -83,4 +84,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
+# Start your custom Next.js server
 CMD ["bun", "run", "server.js"]
