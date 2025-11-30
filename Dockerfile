@@ -65,7 +65,7 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/server.js ./server.js
+COPY server.js ./server.js
 
 # Install Chromium browser only
 RUN mkdir -p /ms-playwright && \

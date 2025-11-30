@@ -1,28 +1,22 @@
-const NextServer = require("next/dist/server/next-server").default;
-const http = require("http");
+import { createServer } from "http";
+import next from "next";
 
-const port = Number(process.env.PORT ?? 8080);
+const dev = false;
+const hostname = "0.0.0.0";
+const port = parseInt(process.env.PORT || "3000", 10);
 
-const app = new NextServer({
-  hostname: "0.0.0.0",
+const app = next({
+  dev,
+  hostname,
   port,
-  dir: ".",
-  dev: process.env.NODE_ENV !== "production",
-  conf: {}, // ← REQUIRED in Next.js 15
+  dir: ".", // IMPORTANT
+  conf: {}, // REQUIRED FOR Next 15
 });
 
-const handler = app.getRequestHandler();
+const handle = app.getRequestHandler();
 
-http
-  .createServer(async (req, res) => {
-    try {
-      await handler(req, res);
-    } catch (err) {
-      console.error(err);
-      res.statusCode = 500;
-      res.end("Internal server error");
-    }
-  })
-  .listen(port, "0.0.0.0", () => {
-    console.log("Server running on port", port);
+app.prepare().then(() => {
+  createServer((req, res) => handle(req, res)).listen(port, hostname, () => {
+    console.log("Running on port", port);
   });
+});
