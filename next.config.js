@@ -12,9 +12,6 @@ const config = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  experimental: {
-    serverMinification: false, // optional but helps debugging
-  },
 };
 
 export default config;
