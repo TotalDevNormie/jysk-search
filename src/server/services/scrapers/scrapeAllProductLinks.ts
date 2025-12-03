@@ -1,12 +1,15 @@
+import "dotenv/config";
 import { chromium } from "playwright";
 import { getSubcategorieLinks } from "./getSubcategorieLinks.ts";
 import { getProductLinks } from "./getProductLinks.ts";
 import { eq, sql } from "drizzle-orm";
-import { categories, product_links } from "~/server/db/schema.ts";
-import { db } from "~/server/db/index.ts";
+import { categories, product_links } from "../../db/schema.ts";
+import { db } from "../../db/index.ts";
 
 const CONCURRENCY = 1;
 const MAX_RETRIES = 3;
+
+console.log(process.env.DATABASE_URL);
 
 export default async (categoryLinks: string[]): Promise<string[]> => {
   let browser = await chromium.launch({
@@ -67,7 +70,7 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
   };
 
   const subcategoriesNested = await Promise.all(
-    categoryLinks.map(scrapeCategory)
+    categoryLinks.map(scrapeCategory),
   );
   const allSubcategories = subcategoriesNested.flat();
 
@@ -78,7 +81,8 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
       .set({
         status: failedCategories.includes(url) ? "failed" : "done",
         last_attempt: new Date(),
-        attempts: sql`${categories.attempts} + 1`, })
+        attempts: sql`${categories.attempts} + 1`,
+      })
       .where(eq(categories.url, url));
   }
 
@@ -149,7 +153,8 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
       .where(eq(categories.url, url))
       .limit(1);
 
-    if (row[0]?.attempts && row[0]?.attempts < MAX_RETRIES) retryCategories.push(url);
+    if (row[0]?.attempts && row[0]?.attempts < MAX_RETRIES)
+      retryCategories.push(url);
   }
 
   if (retryCategories.length > 0) {

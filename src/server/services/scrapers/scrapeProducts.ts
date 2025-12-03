@@ -1,33 +1,29 @@
+import "dotenv/config";
 import { chromium } from "playwright";
 import { getProductInfo } from "./getProductInfo.ts";
-import { eq, notExists } from "drizzle-orm";
-import { db } from "~/server/db/index.ts";
+import { eq, lt, notExists, sql } from "drizzle-orm";
+import { db } from "../../db/index.ts";
 import {
   product_alternate_skus,
   product_links,
   products,
-} from "~/server/db/schema.ts";
+} from "../../db/schema.ts";
 
-const CONCURRENCY = 3;
+const CONCURRENCY = 6;
 
 export const scrapeAllProducts = async () => {
+  const FOUR_DAYS_AGO = sql`NOW() - INTERVAL '4 days'`;
+
   const productRows = await db
-    .select({ url: product_links.url })
-    .from(product_links)
-    .where(
-      notExists(
-        db
-          .select({ url: products.url })
-          .from(products)
-          .where(eq(products.url, product_links.url)),
-      ),
-    );
+    .select({ url: products.url })
+    .from(products)
+    .where(lt(products.scraped_at, FOUR_DAYS_AGO));
 
   if (!productRows.length) return [];
 
   const queue = [...productRows];
   const results: any[] = [];
-  let failures = 0;
+  const failures: string[] = [];
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -103,17 +99,17 @@ export const scrapeAllProducts = async () => {
           results.push(info);
 
           console.clear();
-          console.log(`Last scraped: ${info.title}`);
+          console.log(`Last scraped: ${info.title} - ${info.sku}`);
           console.log(`Products scraped: ${results.length}`);
           console.log(`Failed scrapes: ${failures}`);
         }
       } catch (err) {
-        failures++;
+        failures.push(row.url as string);
 
         console.clear();
         console.log(`Failed to scrape: ${row.url}`);
         console.log(`Products scraped: ${results.length}`);
-        console.log(`Failed scrapes: ${failures}`);
+        console.log(`Failed scrapes: ${failures.length}`);
       } finally {
         await page.close();
       }
@@ -123,5 +119,5 @@ export const scrapeAllProducts = async () => {
   await Promise.all(workers);
   await browser.close();
 
-  return results;
+  return { results, failures };
 };
