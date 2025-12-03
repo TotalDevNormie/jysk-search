@@ -14,13 +14,9 @@ import PaginationClient from "./pagination-client";
 
 const ITEMS_PER_PAGE = 12;
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: { query?: string; page?: string };
-}) {
-  const query = searchParams.query ?? "";
-  const currentPage = Number(searchParams.page ?? "1");
+export default async function SearchPage(props: any) {
+  const query = props?.searchParams?.query ?? "";
+  const currentPage = Number(props?.searchParams?.page ?? "1");
 
   const products = await api.product.searchResult({ query });
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);

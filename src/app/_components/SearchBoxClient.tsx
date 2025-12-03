@@ -14,7 +14,7 @@ export default function SearchBoxClient() {
     Omit<ProductInfo, "attributes" | "prices">[]
   >([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const debounceTimer = useRef<NodeJS.Timeout>();
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const handleSearchRedirect = () => {
     if (isSixDigit(term)) {

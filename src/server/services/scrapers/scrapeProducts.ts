@@ -11,7 +11,10 @@ import {
 
 const CONCURRENCY = 6;
 
-export const scrapeAllProducts = async () => {
+export const scrapeAllProducts = async (): Promise<{
+  results: any[];
+  failures: string[];
+}> => {
   const FOUR_DAYS_AGO = sql`NOW() - INTERVAL '4 days'`;
 
   const productRows = await db
@@ -19,7 +22,7 @@ export const scrapeAllProducts = async () => {
     .from(products)
     .where(lt(products.scraped_at, FOUR_DAYS_AGO));
 
-  if (!productRows.length) return [];
+  if (!productRows.length) return { results: [], failures: [] };
 
   const queue = [...productRows];
   const results: any[] = [];
@@ -42,11 +45,11 @@ export const scrapeAllProducts = async () => {
       const page = await context.newPage();
 
       try {
+        if (row?.url === null) continue;
         await page.goto(row.url, { waitUntil: "networkidle" });
 
         const infos = await getProductInfo(page);
         for (const info of infos) {
-          // UPSERT product
           await db
             .insert(products)
             .values({
