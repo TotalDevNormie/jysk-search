@@ -1,9 +1,8 @@
 # -------- BASE IMAGE --------
 FROM node:20-slim AS base
 
-# Required libraries for Chromium headless
+# Required OS libs for Chromium headless shell
 RUN apt-get update && apt-get install -y \
-    wget \
     libnss3 \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
@@ -24,21 +23,17 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libx11-xcb1 \
     libglib2.0-0 \
+    wget \
     xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 # -------- INSTALL DEPENDENCIES --------
-FROM base AS deps
 COPY package.json package-lock.json* ./
-# Install dependencies normally
 RUN npm install
 
 # -------- BUILD --------
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
@@ -49,13 +44,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install Playwright Core + Chromium only
+# Install playwright-core but only chromium-headless-shell
 RUN npm install playwright-core
-RUN npx playwright install chromium
+RUN npx playwright install chromium-headless-shell
 
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=deps /app/node_modules ./node_modules
+# Copy built app and node_modules
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/.next ./.next
+COPY --from=base /app/public ./public
 COPY package.json .
 
 EXPOSE 3000
