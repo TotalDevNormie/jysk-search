@@ -1,7 +1,7 @@
 # -------- BASE IMAGE --------
 FROM node:20-slim AS base
 
-# Required for Playwright dependencies
+# Required libraries for Chromium headless
 RUN apt-get update && apt-get install -y \
     wget \
     libnss3 \
@@ -31,22 +31,15 @@ WORKDIR /app
 
 # -------- INSTALL DEPENDENCIES --------
 FROM base AS deps
-
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
-# Choose your package manager:
+COPY package.json package-lock.json* ./
+# Install dependencies normally
 RUN npm install
 
 # -------- BUILD --------
 FROM base AS builder
 WORKDIR /app
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Install Playwright browser(s)
-RUN npx playwright install chromium
-
-# Next.js build
 RUN npm run build
 
 # -------- RUNNER --------
@@ -56,9 +49,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Install Playwright Core + minimal Chromium
+RUN npm install playwright-core
+RUN npx playwright install chromium --with-deps=0
+
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=deps /app/node_modules ./node_modules
 COPY package.json .
 
 EXPOSE 3000

@@ -12,6 +12,14 @@ export default async function Home() {
             Šī ir beta versija, tādad ja jums būs kādas problēmas, lūdzu,
             sazinaties ar mani
           </p>
+
+          <h2 className="text-lg font-bold">Šobrīd pieejamās, atšķirīgas no galvenās mājaslapas funkicijas:</h2>
+          <ul className="list-disc list-inside">
+            <li>Nav pārlādes, var sāk meklēt negaidot;</li>
+            <li>Uzreiz pieejami atlikumi Krasta veikalam un Noliktavai;</li>
+            <li>Artikuls no preces ar izmēru atveras uzreiz ar pareizu izmēru;</li>
+          </ul>
+
         </div>
       </div>
     </HydrateClient>
