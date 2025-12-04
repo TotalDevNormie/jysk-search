@@ -49,9 +49,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install Playwright Core + minimal Chromium
+# Install Playwright Core + Chromium only
 RUN npm install playwright-core
-RUN npx playwright install chromium --with-deps=0
+RUN npx playwright install chromium
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
