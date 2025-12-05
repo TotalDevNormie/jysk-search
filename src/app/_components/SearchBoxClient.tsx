@@ -16,6 +16,8 @@ export default function SearchBoxClient() {
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
+  console.log("term", term);
+
   const handleSearchRedirect = () => {
     if (isSixDigit(term)) {
       router.push(`/product/${term}`);
@@ -26,7 +28,6 @@ export default function SearchBoxClient() {
   };
 
   const handleSelect = (sku: string) => {
-    setTerm("");
     setFocus(false);
     router.push(`/product/${sku}`);
   };
@@ -40,16 +41,13 @@ export default function SearchBoxClient() {
     }
 
     if (value.length > 2) {
-      // Debounce the search
-      debounceTimer.current = setTimeout(async () => {
-        try {
-          const results = await searchSuggestions(value);
-          setSuggestions(results);
-        } catch (error) {
-          console.error("Search error:", error);
-          setSuggestions([]);
-        }
-      }, 300);
+      try {
+        const results = await searchSuggestions(value);
+        setSuggestions(results);
+      } catch (error) {
+        console.error("Search error:", error);
+        setSuggestions([]);
+      }
     } else {
       setSuggestions([]);
     }

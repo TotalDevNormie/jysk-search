@@ -21,7 +21,6 @@ export default async function ProductPage({ params }: Props) {
   const { sku } = await params;
   const store = "JYSK Krasta";
 
-  // You can call your server-side API directly
   const data = await api.product.getProductBySku({ sku });
   console.log(data);
   const object =
@@ -37,108 +36,146 @@ export default async function ProductPage({ params }: Props) {
     ? api.scrape.getProductAvailability(object)
     : null;
   const prices = data?.prices;
+  
   return (
-    <div className="grid gap-8 p-4">
-      <div className="flex justify-between gap-4">
-        <h1 className="text-3xl font-bold">{data.title}</h1>
-        <span className="text-nowrap">SKU: {data.sku}</span>
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Header Section */}
+      <div className="mb-8 space-y-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+            {data.title}
+          </h1>
+          <span className="text-sm text-gray-500">SKU: {data.sku}</span>
+        </div>
       </div>
-      {/* <Suspense> */}
-      {/*   <Cupon availibility={availability} /> */}
-      {/* </Suspense> */}
-      <div>
-        <h2 className="flex items-center gap-2">
-          Pieejamība {store}:{" "}
+
+      {/* Availability Section */}
+      <div className="mb-8 rounded-lg border border-gray-200 bg-gray-50/50 p-5 space-y-3">
+        <h2 className="text-lg font-semibold mb-4">Pieejamība</h2>
+        
+        <div className="flex items-start gap-3">
+          <span className="min-w-0 flex-1 text-sm text-gray-700">
+            {store}:
+          </span>
           <Suspense fallback={<Spinner />}>
             <AvailabilityMain
               availabilityPromise={availability}
               store={store}
             />
           </Suspense>
-        </h2>
-        <h2 className="flex items-center gap-2">
-          Pieejamība JYSK pakomātā, Ulbrokas iela 48:{" "}
+        </div>
+        
+        <Separator className="my-3" />
+        
+        <div className="flex items-start gap-3">
+          <span className="min-w-0 flex-1 text-sm text-gray-700">
+            JYSK pakomāts, Ulbrokas iela 48:
+          </span>
           <Suspense fallback={<Spinner />}>
             <AvailabilityMain
               availabilityPromise={availability}
               store={"JYSK Pakomāts un noliktava"}
             />
           </Suspense>
-        </h2>
+        </div>
       </div>
 
-      <div className="relative mx-auto h-[40vh] w-full rounded-lg p-4">
+      {/* Image Section */}
+      <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg border border-gray-200 bg-white">
         <Image
           src={data.image}
           alt={data.title}
           fill
-          className="h-full w-full object-contain"
+          className="object-contain p-4"
         />
       </div>
-      <div>
+
+      {/* Price Section */}
+      <div className="mb-8 space-y-3">
         {prices?.regularPrice && (
-          <h2 className="text-3xl font-bold">{prices.regularPrice} &euro;</h2>
+          <div className="text-4xl font-bold tracking-tight">
+            {prices.regularPrice} &euro;
+          </div>
         )}
         {prices?.oldPrice && prices?.specialPrice && (
-          <div className="flex items-center gap-2">
-            <h2 className="text-3xl font-bold text-red-500">
+          <div className="flex items-baseline gap-3">
+            <span className="text-4xl font-bold tracking-tight text-red-600">
               {prices.specialPrice} &euro;
-            </h2>
-            <span className="text-gray text-sm line-through">
+            </span>
+            <span className="text-lg text-gray-400 line-through">
               {prices.oldPrice} &euro;
             </span>
           </div>
         )}
         {prices?.loyaltyPrice && (
-          <h2 className="text-3xl font-bold text-blue-500">
-            {prices.loyaltyPrice} &euro;{" "}
+          <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 p-4">
+            <span className="text-2xl font-bold text-blue-700">
+              {prices.loyaltyPrice} &euro;
+            </span>
             <Image
               className="inline"
               alt="loyalty card"
               src="https://www.jysk.lv/static/version1763707917/frontend/Jysk/default/lv_LV/images/media/client_card.png"
-              width={40}
-              height={40}
-            ></Image>
-          </h2>
+              width={32}
+              height={32}
+            />
+          </div>
         )}
       </div>
 
-      {data?.sizes && <SizeSelect sizes={data?.sizes} currentSku={data.sku} />}
+      {/* Size Selection */}
+      {data?.sizes && (
+        <div className="mb-8">
+          <SizeSelect sizes={data?.sizes} currentSku={data.sku} />
+        </div>
+      )}
 
-      <p>
-        <span className="font-semibold">Apskatīties mājaslapā: </span>
+      {/* Product Link */}
+      <div className="mb-8 rounded-lg border border-gray-200 bg-gray-50/50 p-4">
+        <span className="text-sm font-medium text-gray-700">
+          Apskatīties mājaslapā:{" "}
+        </span>
         <Link
-          className="text-blue-500 hover:underline"
+          className="break-all text-sm text-blue-600 hover:text-blue-800 hover:underline"
           target="_blank"
           href={data?.url}
         >
           {data?.url}
         </Link>
-      </p>
+      </div>
 
-      <Accordion type="multiple">
-        <AccordionItem value="info">
-          <AccordionTrigger className="text-xl font-bold">
+      {/* Accordion Section */}
+      <Accordion type="multiple" className="space-y-2">
+        <AccordionItem value="info" className="rounded-lg border border-gray-200">
+          <AccordionTrigger className="px-5 py-4 text-lg font-semibold hover:no-underline">
             Produkta informācija
           </AccordionTrigger>
-          <AccordionContent className="grid gap-4">
+          <AccordionContent className="space-y-6 px-5 pb-5">
             {data.description && (
               <div>
-                <h2 className="text-lg font-bold">Apraksts: </h2>
-                <p className="p-2">{data.description}</p>
+                <h3 className="mb-2 text-base font-semibold">Apraksts</h3>
+                <p className="text-sm leading-relaxed text-gray-700">
+                  {data.description}
+                </p>
               </div>
             )}
             <div>
-              <h2 className="text-lg font-bold">Papildus informācija:</h2>
-              <ul>
+              <h3 className="mb-3 text-base font-semibold">
+                Papildus informācija
+              </h3>
+              <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200">
                 {data?.attributes?.map(
                   (attribute: { label: string; data: string }) => (
                     <li
                       key={attribute.label}
-                      className="border-gray border-b-2 p-2"
+                      className="flex justify-between gap-4 px-4 py-3"
                     >
-                      <span className="font-bold">{attribute.label}:</span>{" "}
-                      {attribute.data}
+                      <span className="text-sm font-medium text-gray-700">
+                        {attribute.label}
+                      </span>
+                      <span className="text-sm text-gray-600">
+                        {attribute.data}
+                      </span>
                     </li>
                   ),
                 )}
@@ -151,7 +188,6 @@ export default async function ProductPage({ params }: Props) {
           <AvailabilityAccordion availabilityPromise={availability} />
         </Suspense>
       </Accordion>
-      {/* other product info */}
     </div>
   );
 }
@@ -176,53 +212,52 @@ async function AvailabilityAccordion({
   const getColor = (stock: string) => {
     if (parseInt(stock)) {
       if (parseInt(stock) < 5) {
-        return "text-yellow-500";
+        return "text-yellow-600";
       } else {
-        return "text-green-500";
+        return "text-green-600";
       }
     } else if (stock == "Vairāk par 5") {
-      return "text-green-500";
+      return "text-green-600";
     } else {
-      return "text-red-500";
+      return "text-red-600";
     }
   };
 
   if (!availability) return null;
 
   return (
-    <AccordionItem value="availability">
-      <AccordionTrigger className="text-xl font-bold">
+    <AccordionItem value="availability" className="rounded-lg border border-gray-200">
+      <AccordionTrigger className="px-5 py-4 text-lg font-semibold hover:no-underline">
         Pieejamība veikalos
       </AccordionTrigger>
-      <AccordionContent>
+      <AccordionContent className="px-5 pb-5">
         <div className="space-y-6">
           {Object.entries(grouped || {}).map(([city, stores]) => (
             <div key={city}>
-              <h3 className="text-md mb-2 font-semibold">{city}</h3>
-              <ul className="grid gap-2">
+              <h3 className="mb-3 text-base font-semibold text-gray-900">
+                {city}
+              </h3>
+              <ul className="space-y-2">
                 {stores.map((s) => (
-                  <li key={s.address}>
-                    <div className="flex justify-between gap-2 p-4">
-                      <p className="text-md font-medium">{s.address}</p>
-                      <div>
-                        <p className={`${getColor(s.stock)} text-right`}>
+                  <li key={s.address} className="rounded-lg border border-gray-200 bg-white">
+                    <div className="flex items-start justify-between gap-4 p-4">
+                      <p className="min-w-0 flex-1 text-sm font-medium text-gray-700">
+                        {s.address}
+                      </p>
+                      <div className="text-right">
+                        <p className={`text-sm font-semibold ${getColor(s.stock)}`}>
                           {s.stock}
                         </p>
-                        <p>
-                          {s.sampleAvailable && (
-                            <span>Paraugs pieejams veikalā</span>
-                          )}
-                        </p>
+                        {s.sampleAvailable && (
+                          <p className="mt-1 text-xs text-gray-500">
+                            Paraugs pieejams
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <Separator />
                   </li>
                 ))}
               </ul>
-
-              {/* {i !== arr.length - 1 && ( */}
-              {/*   <div className="mt-4 border-b border-white/20" /> */}
-              {/* )} */}
             </div>
           ))}
         </div>
@@ -239,7 +274,7 @@ async function AvailabilityMain({
   store: string;
 }) {
   const availability = await availabilityPromise;
-  if (!availability) return <span className="text-red-500">Nav noliktavā</span>;
+  if (!availability) return <span className="text-sm font-medium text-red-600">Nav noliktavā</span>;
   const storeAvailability = availability.stores.find((s) =>
     s.address.includes(store),
   );
@@ -260,17 +295,17 @@ async function AvailabilityMain({
     availabilityText = storeAvailability?.stock || "";
     const stockNum = parseInt(storeAvailability?.stock || "0");
     if (stockNum > 0 && stockNum < 5) {
-      color = "text-yellow-500";
+      color = "text-yellow-600";
     } else {
-      color = "text-green-500";
+      color = "text-green-600";
     }
   } else if (storeAvailability?.sampleAvailable) {
-    availabilityText = "Paraugs ir pieejams veikalā";
-    color = "";
+    availabilityText = "Paraugs ir pieejams";
+    color = "text-gray-700";
   } else {
     availabilityText = "Nav noliktavā";
-    color = "text-red-500";
+    color = "text-red-600";
   }
 
-  return <span className={color}>{availabilityText}</span>;
+  return <span className={`text-sm font-medium ${color}`}>{availabilityText}</span>;
 }
