@@ -1,5 +1,5 @@
 import { api, HydrateClient } from "~/trpc/server";
-import { Suspense } from "react";
+import StoreSelect from "./_components/StoreSelect";
 
 export default async function Home() {
   return (
@@ -13,13 +13,20 @@ export default async function Home() {
             sazinaties ar mani
           </p>
 
-          <h2 className="text-lg font-bold">Šobrīd pieejamās, atšķirīgas no galvenās mājaslapas funkicijas:</h2>
-          <ul className="list-disc list-inside">
+          <h2 className="text-lg font-bold">
+            Šobrīd pieejamās, atšķirīgas no galvenās mājaslapas funkicijas:
+          </h2>
+          <ul className="list-inside list-disc">
             <li>Nav pārlādes, var sāk meklēt negaidot;</li>
             <li>Uzreiz pieejami atlikumi Krasta veikalam un Noliktavai;</li>
-            <li>Artikuls no preces ar izmēru atveras uzreiz ar pareizu izmēru;</li>
+            <li>
+              Artikuls no preces ar izmēru atveras uzreiz ar pareizu izmēru;
+            </li>
           </ul>
-
+          <h2 className="text-lg font-bold">
+            Veikala izvēle:
+          </h2>
+          <StoreSelect />
         </div>
       </div>
     </HydrateClient>

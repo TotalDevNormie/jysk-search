@@ -12,6 +12,7 @@ import type { ProductAvailability } from "~/server/services/scrapers/getAvailabi
 import { SizeSelect } from "~/app/_components/sizeSelect";
 import Link from "next/link";
 import { Separator } from "~/components/ui/separator";
+import { cookies } from "next/headers";
 
 type Props = {
   params: Promise<{ sku: string }>;
@@ -19,7 +20,9 @@ type Props = {
 
 export default async function ProductPage({ params }: Props) {
   const { sku } = await params;
-  const store = "JYSK Krasta";
+
+  const cookieStore = await cookies();
+  const store = cookieStore.get("store")?.value ?? "JYSK Krasta";
 
   const data = await api.product.getProductBySku({ sku });
   console.log(data);
@@ -36,13 +39,13 @@ export default async function ProductPage({ params }: Props) {
     ? api.scrape.getProductAvailability(object)
     : null;
   const prices = data?.prices;
-  
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header Section */}
       <div className="mb-8 space-y-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+          <h1 className="text-3xl leading-tight font-bold tracking-tight sm:text-4xl">
             {data.title}
           </h1>
           <span className="text-sm text-gray-500">SKU: {data.sku}</span>
@@ -50,13 +53,11 @@ export default async function ProductPage({ params }: Props) {
       </div>
 
       {/* Availability Section */}
-      <div className="mb-8 rounded-lg border border-gray-200 bg-gray-50/50 p-5 space-y-3">
-        <h2 className="text-lg font-semibold mb-4">Pieejamība</h2>
-        
+      <div className="mb-8 space-y-3 rounded-lg border border-gray-200 bg-gray-50/50 p-5">
+        <h2 className="mb-4 text-lg font-semibold">Pieejamība</h2>
+
         <div className="flex items-start gap-3">
-          <span className="min-w-0 flex-1 text-sm text-gray-700">
-            {store}:
-          </span>
+          <span className="min-w-0 flex-1 text-sm text-gray-700">{store}:</span>
           <Suspense fallback={<Spinner />}>
             <AvailabilityMain
               availabilityPromise={availability}
@@ -64,9 +65,9 @@ export default async function ProductPage({ params }: Props) {
             />
           </Suspense>
         </div>
-        
+
         <Separator className="my-3" />
-        
+
         <div className="flex items-start gap-3">
           <span className="min-w-0 flex-1 text-sm text-gray-700">
             JYSK pakomāts, Ulbrokas iela 48:
@@ -136,7 +137,7 @@ export default async function ProductPage({ params }: Props) {
           Apskatīties mājaslapā:{" "}
         </span>
         <Link
-          className="break-all text-sm text-blue-600 hover:text-blue-800 hover:underline"
+          className="text-sm break-all text-blue-600 hover:text-blue-800 hover:underline"
           target="_blank"
           href={data?.url}
         >
@@ -146,7 +147,10 @@ export default async function ProductPage({ params }: Props) {
 
       {/* Accordion Section */}
       <Accordion type="multiple" className="space-y-2">
-        <AccordionItem value="info" className="rounded-lg border border-gray-200">
+        <AccordionItem
+          value="info"
+          className="rounded-lg border border-gray-200"
+        >
           <AccordionTrigger className="px-5 py-4 text-lg font-semibold hover:no-underline">
             Produkta informācija
           </AccordionTrigger>
@@ -226,7 +230,10 @@ async function AvailabilityAccordion({
   if (!availability) return null;
 
   return (
-    <AccordionItem value="availability" className="rounded-lg border border-gray-200">
+    <AccordionItem
+      value="availability"
+      className="rounded-lg border border-gray-200"
+    >
       <AccordionTrigger className="px-5 py-4 text-lg font-semibold hover:no-underline">
         Pieejamība veikalos
       </AccordionTrigger>
@@ -239,13 +246,18 @@ async function AvailabilityAccordion({
               </h3>
               <ul className="space-y-2">
                 {stores.map((s) => (
-                  <li key={s.address} className="rounded-lg border border-gray-200 bg-white">
+                  <li
+                    key={s.address}
+                    className="rounded-lg border border-gray-200 bg-white"
+                  >
                     <div className="flex items-start justify-between gap-4 p-4">
                       <p className="min-w-0 flex-1 text-sm font-medium text-gray-700">
                         {s.address}
                       </p>
                       <div className="text-right">
-                        <p className={`text-sm font-semibold ${getColor(s.stock)}`}>
+                        <p
+                          className={`text-sm font-semibold ${getColor(s.stock)}`}
+                        >
                           {s.stock}
                         </p>
                         {s.sampleAvailable && (
@@ -274,7 +286,10 @@ async function AvailabilityMain({
   store: string;
 }) {
   const availability = await availabilityPromise;
-  if (!availability) return <span className="text-sm font-medium text-red-600">Nav noliktavā</span>;
+  if (!availability)
+    return (
+      <span className="text-sm font-medium text-red-600">Nav noliktavā</span>
+    );
   const storeAvailability = availability.stores.find((s) =>
     s.address.includes(store),
   );
@@ -307,5 +322,7 @@ async function AvailabilityMain({
     color = "text-red-600";
   }
 
-  return <span className={`text-sm font-medium ${color}`}>{availabilityText}</span>;
+  return (
+    <span className={`text-sm font-medium ${color}`}>{availabilityText}</span>
+  );
 }

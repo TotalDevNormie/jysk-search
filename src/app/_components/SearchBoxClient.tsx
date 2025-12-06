@@ -90,7 +90,7 @@ export default function SearchBoxClient() {
         <Search />
         Meklēt
       </button>
-      {focus && suggestions && suggestions.length > 0 && (
+      {term && focus && suggestions && suggestions.length > 0 && (
         <div className="border-gray absolute top-full grid w-full border-t-2 bg-white">
           {!isSixDigit(term) &&
             suggestions.map((item) => (
