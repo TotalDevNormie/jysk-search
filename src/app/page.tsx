@@ -9,7 +9,7 @@ export default async function Home() {
           <h1 className="text-center text-3xl font-bold">JYSK search (beta)</h1>
           <h2 className="text-xl font-bold">Ērtāks rīks produktu meklēšanai</h2>
           <p>
-            Šī ir beta versija, tādad ja jums būs kādas problēmas, lūdzu,
+            Šī ir beta versija, tātad ja jums būs kādas problēmas, lūdzu,
             sazinaties ar mani
           </p>
 
@@ -18,9 +18,12 @@ export default async function Home() {
           </h2>
           <ul className="list-inside list-disc">
             <li>Nav pārlādes, var sāk meklēt negaidot;</li>
-            <li>Uzreiz pieejami atlikumi Krasta veikalam un Noliktavai;</li>
+            <li>Uzreiz pieejami atlikumi izvēlētam veikalam un galvenai noliktavai;</li>
             <li>
               Artikuls no preces ar izmēru atveras uzreiz ar pareizu izmēru;
+            </li>
+            <li>
+              labāka meklēšanas vēsture
             </li>
           </ul>
           <h2 className="text-lg font-bold">
@@ -32,3 +35,4 @@ export default async function Home() {
     </HydrateClient>
   );
 }
+

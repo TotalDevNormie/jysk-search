@@ -5,27 +5,38 @@ import { db } from "~/server/db";
 import { product_alternate_skus, products } from "~/server/db/schema";
 import type { ProductInfo } from "~/server/services/scrapers/getProductInfo";
 
-// ------------------------------------------------------
-// 🔥 1. Shared search condition builder
-// ------------------------------------------------------
+function escapeForRegex(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function isInt(str: string): boolean {
+  const num = Number(str);
+  console.log("isInt", num);
+  return Number.isInteger(num);
+}
+
 function buildSearchConditions(words: string[]) {
-  return words.map((w) =>
-    or(
+  return words.map((w) => {
+    const escaped = escapeForRegex(w);
+    const regex = `.*${escaped}.*`; // matches like %w% (substring)
+
+    return or(
       ilike(sql`unaccent(${products.title})`, `%${w}%`),
       ilike(sql`unaccent(${products.sku})`, `%${w}%`),
       ilike(sql`unaccent(${product_alternate_skus.alt_sku})`, `%${w}%`),
       ilike(sql`unaccent(${products.description})`, `%${w}%`),
-    ),
-  );
+      sql`
+        jsonb_path_exists(
+          ${products.attributes},
+          ${`$[*] ? (@.data like_regex "${regex}" flag "i")`}
+        )
+      `,
+    );
+  });
 }
 
-// ------------------------------------------------------
-// 🔥 2. Router
-// ------------------------------------------------------
+
 export const productRouter = createTRPCRouter({
-  // ------------------------------
-  // Search Suggestions (limit 5)
-  // ------------------------------
   searchSuggestions: publicProcedure
     .input(z.object({ query: z.string() }))
     .query(async ({ input }) => {
@@ -34,6 +45,33 @@ export const productRouter = createTRPCRouter({
         if (!q) return [];
 
         const words = q.split(/\s+/).filter(Boolean);
+
+        const last = words[words.length - 1];
+
+        if (words.length >= 2 && last && /\d+/.test(last as string)) {
+          return (await db
+            .select({
+              sku: products.sku,
+              title: products.title,
+              url: products.url,
+              image: products.image,
+              sizes: products.sizes,
+            })
+            .from(products)
+            .where(
+              and(
+                ilike(sql`unaccent(${products.title})`, `%${words[0]}%`),
+                sql`EXISTS (
+                  SELECT 1
+                  FROM jsonb_array_elements(${products.attributes}) AS elem
+                  WHERE elem->>'data' ILIKE ${`%${last}%`}
+                )`,
+              ),
+            )
+            .groupBy(products.sku)
+            .limit(10)) as ProductInfo[];
+        }
+
         const conditions = buildSearchConditions(words);
 
         return (await db
@@ -52,10 +90,12 @@ export const productRouter = createTRPCRouter({
           .where(
             and(
               ...conditions,
-              or(
-                isNull(products.sizes),
-                eq(products.sku, sql`${products.sizes}->0->>'sku'`),
-              ),
+              words.length === 1 && words[0] && isInt(words[0])
+                ? undefined
+                : or(
+                    isNull(products.sizes),
+                    eq(products.sku, sql`${products.sizes}->0->>'sku'`),
+                  ),
             ),
           )
           .groupBy(products.sku)
@@ -65,9 +105,6 @@ export const productRouter = createTRPCRouter({
       }
     }),
 
-  // ------------------------------
-  // Search Result (paginated)
-  // ------------------------------
   searchResult: publicProcedure
     .input(
       z.object({
@@ -86,7 +123,6 @@ export const productRouter = createTRPCRouter({
 
         const offset = (input.page - 1) * input.limit;
 
-        // COUNT
         const [countResult] = await db
           .select({ count: sql<number>`count(DISTINCT ${products.sku})` })
           .from(products)
@@ -98,7 +134,6 @@ export const productRouter = createTRPCRouter({
 
         const total = countResult?.count ?? 0;
 
-        // RESULTS
         const results = (await db
           .selectDistinct({
             sku: products.sku,
@@ -124,12 +159,10 @@ export const productRouter = createTRPCRouter({
       }
     }),
 
-  // ------------------------------
-  // Product by SKU
-  // ------------------------------
   getProductBySku: publicProcedure
     .input(z.object({ sku: z.string() }))
     .query(async ({ input }) => {
+    try {
       const product = await db
         .select({
           sku: products.sku,
@@ -154,6 +187,10 @@ export const productRouter = createTRPCRouter({
         .limit(1);
 
       return (product[0] as ProductInfo) || null;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
     }),
 
   test: publicProcedure.query(async () => "test"),
