@@ -17,6 +17,7 @@ type HistoryItem =
       sku: string;
       title: string;
       image: string;
+      prices: any;
       size?: string;
     }
   | { type: "query"; query: string };
@@ -27,7 +28,7 @@ export default function SearchBoxClient() {
   const [focus, setFocus] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [suggestions, setSuggestions] = useState<
-    Omit<ProductInfo, "attributes" | "prices">[]
+    Omit<ProductInfo, "attributes" | "url">[]
   >([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -80,6 +81,7 @@ export default function SearchBoxClient() {
           sku: product.sku,
           title: product.title,
           image: product.image,
+          prices: product.prices,
           size: product.sizes?.find((s) => s.sku === product!.sku)?.size,
         });
       } else {
@@ -88,6 +90,7 @@ export default function SearchBoxClient() {
           sku,
           title: sku,
           image: "",
+          prices: "",
           size: undefined,
         });
       }
@@ -102,12 +105,13 @@ export default function SearchBoxClient() {
     inputRef.current?.blur();
   };
 
-  const handleSelect = (item: Omit<ProductInfo, "attributes" | "prices">) => {
+  const handleSelect = (item: Omit<ProductInfo, "attributes" | "url">) => {
     saveHistory({
       type: "product",
       sku: item.sku,
       title: item.title,
       image: item.image,
+      prices: item.prices,
       size: item.sizes?.find((s) => s.sku === item.sku)?.size,
     });
 
@@ -253,6 +257,7 @@ function HistoryProduct({
     sku: string;
     title: string;
     image: string;
+    prices: any;
     size?: string;
   };
   router: any;
@@ -261,6 +266,7 @@ function HistoryProduct({
     sku: item.sku,
     title: item.title,
     image: item.image,
+    prices: item.prices,
     sizes: item.size ? [{ sku: item.sku, size: item.size }] : undefined,
   };
 
@@ -278,38 +284,72 @@ const SearchItem = ({
   handleSelect,
   withSize,
 }: {
-  item: Omit<ProductInfo, "attributes" | "prices" | "url">;
+  item: Omit<ProductInfo, "attributes" | "url">;
   handleSelect: () => void;
   withSize?: boolean;
 }) => (
   <div
     onMouseDown={handleSelect}
-    className="border-gray flex cursor-pointer gap-4 border-b-2 p-4 hover:bg-gray-50"
+    className="border-gray flex cursor-pointer justify-between gap-4 border-b-2 p-4 hover:bg-gray-50"
   >
-    <Image
-      src={item.image}
-      alt={item.title || "product"}
-      width={100}
-      height={100}
-      className="aspect-square h-20 w-20"
-    />
+    <div className="flex">
+      <Image
+        src={item.image}
+        alt={item.title || "product"}
+        width={100}
+        height={100}
+        className="aspect-square h-20 w-20"
+      />
 
-    <div>
-      <p className="text-xl font-bold">
-        {item.title}{" "}
-        {withSize && item.sizes && (
-          <span className="text-gray-500">
-            ( {item.sizes?.find((i) => i.sku === item.sku)?.size} )
+      <div>
+        <p className="text-xl font-bold">
+          {item.title}{" "}
+          {withSize && item.sizes && (
+            <span className="text-gray-500">
+              ( {item.sizes?.find((i) => i.sku === item.sku)?.size} )
+            </span>
+          )}
+        </p>
+
+        <p className="text-gray-500">
+          SKU:{" "}
+          {item.sizes && !withSize
+            ? item.sizes.map((s) => s.sku).join(", ")
+            : item.sku}
+        </p>
+      </div>
+    </div>
+
+    <div className="space-y-3">
+      {item.prices?.regularPrice && (
+        <div className="text-2xl font-bold tracking-tight">
+          {item.prices.regularPrice} &euro;
+        </div>
+      )}
+      {item.prices?.oldPrice && item.prices?.specialPrice && (
+        <div className="flex items-baseline gap-3">
+          <span className="text-2xl font-bold tracking-tight text-red-600">
+            {item.prices.specialPrice} &euro;
           </span>
-        )}
-      </p>
-
-      <p className="text-gray-500">
-        SKU:{" "}
-        {item.sizes && !withSize
-          ? item.sizes.map((s) => s.sku).join(", ")
-          : item.sku}
-      </p>
+          <span className="text-lg text-gray-400 line-through">
+            {item.prices.oldPrice} &euro;
+          </span>
+        </div>
+      )}
+      {item.prices?.loyaltyPrice && (
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-bold text-blue-700">
+            {item.prices.loyaltyPrice} &euro;
+          </span>
+          <Image
+            className="inline"
+            alt="loyalty card"
+            src="https://www.jysk.lv/static/version1763707917/frontend/Jysk/default/lv_LV/images/media/client_card.png"
+            width={32}
+            height={32}
+          />
+        </div>
+      )}
     </div>
   </div>
 );

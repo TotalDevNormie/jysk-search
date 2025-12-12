@@ -18,9 +18,13 @@ export const scrapeAllProducts = async (): Promise<{
   const FOUR_DAYS_AGO = sql`NOW() - INTERVAL '4 days'`;
 
   const productRows = await db
-    .select({ url: products.url })
-    .from(products)
-    .where(lt(products.scraped_at, FOUR_DAYS_AGO));
+    .select()
+    .from(product_links)
+    .where(
+      notExists(
+        db.select().from(products).where(eq(products.url, product_links.url)),
+      ),
+    );
 
   if (!productRows.length) return { results: [], failures: [] };
 
@@ -50,6 +54,7 @@ export const scrapeAllProducts = async (): Promise<{
 
         const infos = await getProductInfo(page);
         for (const info of infos) {
+          // UPSERT product
           await db
             .insert(products)
             .values({

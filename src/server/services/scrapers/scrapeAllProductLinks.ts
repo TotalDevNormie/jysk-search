@@ -32,6 +32,9 @@ export default async (categoryLinks: string[]): Promise<string[]> => {
   let totalSubcategories = 0;
   let totalProductLinks = 0;
 
+  await db.delete(product_links);
+  await db.delete(categories);
+
   // Scrape one category
   const scrapeCategory = async (categoryUrl: string) => {
     const page = await context.newPage();

@@ -34,7 +34,6 @@ export default async function Page({ params }: Props) {
 
 const isSixDigit = (str: string) => /^\d{6}$/.test(str);
 
-
 async function Product({ params }: Props) {
   const { sku } = await params;
 
@@ -43,10 +42,12 @@ async function Product({ params }: Props) {
 
   const data = await api.product.getProductBySku({ sku });
 
+  console.log(data);
+
   if (!data)
     return (
       <div>
-        <h1 className="text-3xl text-center pt-16 leading-tight font-bold tracking-tight sm:text-4xl">
+        <h1 className="pt-16 text-center text-3xl leading-tight font-bold tracking-tight sm:text-4xl">
           Produkts nav atrasts
         </h1>
       </div>
@@ -65,6 +66,7 @@ async function Product({ params }: Props) {
     ? api.scrape.getProductAvailability(object)
     : null;
   const prices = data?.prices;
+  console.log("availability", availability);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
@@ -118,37 +120,9 @@ async function Product({ params }: Props) {
       </div>
 
       {/* Price Section */}
-      <div className="mb-8 space-y-3">
-        {prices?.regularPrice && (
-          <div className="text-4xl font-bold tracking-tight">
-            {prices.regularPrice} &euro;
-          </div>
-        )}
-        {prices?.oldPrice && prices?.specialPrice && (
-          <div className="flex items-baseline gap-3">
-            <span className="text-4xl font-bold tracking-tight text-red-600">
-              {prices.specialPrice} &euro;
-            </span>
-            <span className="text-lg text-gray-400 line-through">
-              {prices.oldPrice} &euro;
-            </span>
-          </div>
-        )}
-        {prices?.loyaltyPrice && (
-          <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <span className="text-2xl font-bold text-blue-700">
-              {prices.loyaltyPrice} &euro;
-            </span>
-            <Image
-              className="inline"
-              alt="loyalty card"
-              src="https://www.jysk.lv/static/version1763707917/frontend/Jysk/default/lv_LV/images/media/client_card.png"
-              width={32}
-              height={32}
-            />
-          </div>
-        )}
-      </div>
+      <Suspense fallback={<Spinner />}>
+        <Price availabilityPromise={availability} />
+      </Suspense>
 
       {/* Size Selection */}
       {data?.sizes && (
@@ -218,6 +192,48 @@ async function Product({ params }: Props) {
           <AvailabilityAccordion availabilityPromise={availability} />
         </Suspense>
       </Accordion>
+    </div>
+  );
+}
+
+async function Price({
+  availabilityPromise,
+}: {
+  availabilityPromise: Promise<ProductAvailability> | null;
+}) {
+  const availability = await availabilityPromise;
+  const prices = availability?.prices;
+  return (
+    <div className="mb-8 space-y-3">
+      {prices?.regularPrice && (
+        <div className="text-2xl font-bold tracking-tight">
+          {prices.regularPrice} &euro;
+        </div>
+      )}
+      {prices?.oldPrice && prices?.specialPrice && (
+        <div className="flex items-baseline gap-3">
+          <span className="text-2xl font-bold tracking-tight text-red-600">
+            {prices.specialPrice} &euro;
+          </span>
+          <span className="text-lg text-gray-400 line-through">
+            {prices.oldPrice} &euro;
+          </span>
+        </div>
+      )}
+      {prices?.loyaltyPrice && (
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-bold text-blue-700">
+            {prices.loyaltyPrice} &euro;
+          </span>
+          <Image
+            className="inline"
+            alt="loyalty card"
+            src="https://www.jysk.lv/static/version1763707917/frontend/Jysk/default/lv_LV/images/media/client_card.png"
+            width={32}
+            height={32}
+          />
+        </div>
+      )}
     </div>
   );
 }

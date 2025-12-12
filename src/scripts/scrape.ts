@@ -2,6 +2,7 @@ import scrapeAllProductLinks from "../server/services/scrapers/scrapeAllProductL
 
 (async () => {
   const categoryLinks = [
+    "https://www.jysk.lv/ziemassvetkiem.html",
     "https://www.jysk.lv/darzam.html",
     "https://www.jysk.lv/gulamistabai.html",
     "https://www.jysk.lv/vannas-istabai.html",
@@ -11,7 +12,6 @@ import scrapeAllProductLinks from "../server/services/scrapers/scrapeAllProductL
     "https://www.jysk.lv/uzglabasanai.html",
     "https://www.jysk.lv/aizkari.html",
     "https://www.jysk.lv/majokla-dizains.html",
-    "https://www.jysk.lv/mebelu-kolekcijas.html",
   ];
 
   const result = await scrapeAllProductLinks(categoryLinks);

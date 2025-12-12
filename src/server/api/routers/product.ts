@@ -35,7 +35,6 @@ function buildSearchConditions(words: string[]) {
   });
 }
 
-
 export const productRouter = createTRPCRouter({
   searchSuggestions: publicProcedure
     .input(z.object({ query: z.string() }))
@@ -47,6 +46,7 @@ export const productRouter = createTRPCRouter({
         const words = q.split(/\s+/).filter(Boolean);
 
         const last = words[words.length - 1];
+        const queryString = words.join(" ");
 
         if (words.length >= 2 && last && /\d+/.test(last as string)) {
           return (await db
@@ -56,6 +56,7 @@ export const productRouter = createTRPCRouter({
               url: products.url,
               image: products.image,
               sizes: products.sizes,
+              prices: products.prices,
             })
             .from(products)
             .where(
@@ -69,10 +70,19 @@ export const productRouter = createTRPCRouter({
               ),
             )
             .groupBy(products.sku)
-            .limit(10)) as ProductInfo[];
+            .orderBy(
+              sql`greatest(
+  word_similarity(${products.title}, ${queryString}),
+  word_similarity(${products.sku}, ${queryString}),
+  word_similarity(${products.description}, ${queryString})
+) DESC`,
+            )
+            .limit(10)) as (ProductInfo & { rank: number })[];
         }
 
         const conditions = buildSearchConditions(words);
+
+        console.log("works");
 
         return (await db
           .select({
@@ -81,6 +91,7 @@ export const productRouter = createTRPCRouter({
             url: products.url,
             image: products.image,
             sizes: products.sizes,
+            prices: products.prices,
           })
           .from(products)
           .leftJoin(
@@ -99,8 +110,17 @@ export const productRouter = createTRPCRouter({
             ),
           )
           .groupBy(products.sku)
-          .limit(5)) as ProductInfo[];
-      } catch {
+
+          .orderBy(
+            sql`greatest(
+  word_similarity(${products.title}, ${queryString}),
+  word_similarity(${products.sku}, ${queryString}),
+  word_similarity(${products.description}, ${queryString})
+) DESC`,
+          )
+          .limit(5)) as (ProductInfo & { rank: number })[];
+      } catch (err) {
+        console.error(err);
         return [];
       }
     }),
@@ -141,6 +161,7 @@ export const productRouter = createTRPCRouter({
             url: products.url,
             image: products.image,
             sizes: products.sizes,
+            prices: products.prices,
           })
           .from(products)
           .leftJoin(
@@ -162,31 +183,31 @@ export const productRouter = createTRPCRouter({
   getProductBySku: publicProcedure
     .input(z.object({ sku: z.string() }))
     .query(async ({ input }) => {
-    try {
-      const product = await db
-        .select({
-          sku: products.sku,
-          title: products.title,
-          url: products.url,
-          image: products.image,
-          sizes: products.sizes,
-          prices: products.prices,
-          attributes: products.attributes,
-        })
-        .from(products)
-        .leftJoin(
-          product_alternate_skus,
-          eq(product_alternate_skus.product_sku, products.sku),
-        )
-        .where(
-          or(
-            eq(products.sku, input.sku),
-            eq(product_alternate_skus.alt_sku, input.sku),
-          ),
-        )
-        .limit(1);
+      try {
+        const product = await db
+          .select({
+            sku: products.sku,
+            title: products.title,
+            url: products.url,
+            image: products.image,
+            sizes: products.sizes,
+            prices: products.prices,
+            attributes: products.attributes,
+          })
+          .from(products)
+          .leftJoin(
+            product_alternate_skus,
+            eq(product_alternate_skus.product_sku, products.sku),
+          )
+          .where(
+            or(
+              eq(products.sku, input.sku),
+              eq(product_alternate_skus.alt_sku, input.sku),
+            ),
+          )
+          .limit(1);
 
-      return (product[0] as ProductInfo) || null;
+        return (product[0] as ProductInfo) || null;
       } catch (err) {
         console.error(err);
         return null;

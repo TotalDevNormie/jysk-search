@@ -5,7 +5,7 @@ import type { ProductInfo } from "~/server/services/scrapers/getProductInfo";
 
 export async function searchSuggestions(
   query: string,
-): Promise<Omit<ProductInfo, "attributes" | "prices">[]> {
+): Promise<Omit<ProductInfo, "attributes" | "url">[]> {
   if (query.length <= 2) {
     return [];
   }

@@ -106,6 +106,37 @@ async function SearchResults({
                       {item.title}
                     </CardTitle>
                     <CardDescription className="min-w-0 space-y-2">
+                      <div className="space-y-3">
+                        {item.prices?.regularPrice && (
+                          <div className="text-2xl font-bold tracking-tight">
+                            {item.prices.regularPrice} &euro;
+                          </div>
+                        )}
+                        {item.prices?.oldPrice && item.prices?.specialPrice && (
+                          <div className="flex items-baseline gap-3">
+                            <span className="text-2xl font-bold tracking-tight text-red-600">
+                              {item.prices.specialPrice} &euro;
+                            </span>
+                            <span className="text-lg text-gray-400 line-through">
+                              {item.prices.oldPrice} &euro;
+                            </span>
+                          </div>
+                        )}
+                        {item.prices?.loyaltyPrice && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl font-bold text-blue-700">
+                              {item.prices.loyaltyPrice} &euro;
+                            </span>
+                            <Image
+                              className="inline"
+                              alt="loyalty card"
+                              src="https://www.jysk.lv/static/version1763707917/frontend/Jysk/default/lv_LV/images/media/client_card.png"
+                              width={32}
+                              height={32}
+                            />
+                          </div>
+                        )}
+                      </div>
                       {item?.sizes && (
                         <p>
                           Izmērs:{" "}
