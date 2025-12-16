@@ -373,5 +373,3 @@ async function AvailabilityMain({
     <span className={`text-sm font-medium ${color}`}>{availabilityText}</span>
   );
 }
-
-export const dynamic = "force-static";
