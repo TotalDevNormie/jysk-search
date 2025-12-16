@@ -15,29 +15,20 @@ function getSecondsUntilEndOfDay() {
   return Math.floor((end.getTime() - now.getTime()) / 1000);
 }
 
-// --- Singleton browser for reuse ---
-let sharedBrowser: Browser | null = null;
+async function createPage(): Promise<{ browser: Browser; page: Page }> {
+  const browser = await chromium.launch({
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-extensions",
+      "--disable-gpu",
+    ],
+  });
 
-async function getBrowser(): Promise<Browser> {
-  if (!sharedBrowser) {
-    sharedBrowser = await chromium.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-blink-features=AutomationControlled",
-        "--disable-dev-shm-usage",
-        "--disable-background-timer-throttling",
-        "--disable-backgrounding-occluded-windows",
-      ],
-    });
-  }
-  return sharedBrowser;
-}
-
-// --- Create page with network blocking ---
-async function createPage(): Promise<Page> {
-  const browser = await getBrowser();
   const context = await browser.newContext({
     userAgent: DEFAULT_USER_AGENT,
     locale: "lv-LV",
@@ -46,7 +37,6 @@ async function createPage(): Promise<Page> {
 
   const page = await context.newPage();
 
-  // Block images/fonts/analytics for speed
   await page.route("**/*", (route) => {
     const url = route.request().url();
     if (
@@ -64,7 +54,7 @@ async function createPage(): Promise<Page> {
     }
   });
 
-  return page;
+  return { browser, page };
 }
 
 export const scrapeRouter = createTRPCRouter({
@@ -72,7 +62,7 @@ export const scrapeRouter = createTRPCRouter({
     .input(z.object({ query: z.string() }))
     .mutation(async ({ input }) => {
       const base = "https://www.jysk.lv";
-      const page = await createPage();
+      const { browser, page } = await createPage();
 
       try {
         await safeGoto(
@@ -80,7 +70,6 @@ export const scrapeRouter = createTRPCRouter({
           `${base}/search?q=${encodeURIComponent(input.query)}`,
         );
 
-        // Wait for first product link only
         const firstResult = page
           .locator("a.lupa-search-result-product-image-section")
           .first();
@@ -95,57 +84,65 @@ export const scrapeRouter = createTRPCRouter({
         await titleLocator.waitFor({ state: "visible" });
         const title = await titleLocator.textContent();
 
-        // Screenshot only product detail section (faster)
         const productSection = page.locator("div.product-detail");
         const screenshotBuffer = await productSection.screenshot();
         const screenshot = screenshotBuffer.toString("base64");
 
         return { title, screenshot };
       } finally {
-        await page.close();
+        await browser.close(); // Close browser after request
       }
     }),
 
   getProductAvailability: publicProcedure
     .input(z.object({ link: z.string(), size: z.string().optional() }))
     .query(async ({ input }) => {
-      const page = await createPage(); // singleton browser
+      const { browser, page } = await createPage();
       try {
         console.log("getProductAvailability");
         await safeGoto(page, input.link);
         const availability = await getProductAvailability(page, input.size);
-        await page.close();
         return availability;
       } catch (e) {
-        await page.close();
-        throw e;
+        console.error(e);
+        return null;
+      } finally {
+        await browser.close();
       }
     }),
 
   getCupon: publicProcedure.query(async () => {
-    const seconds = getSecondsUntilEndOfDay();
-
-    const cachedGetCupon = unstable_cache(
-      async () => {
-        const page = await createPage();
-        try {
-          await page.goto("https://www.jysk.lv/darzam.html");
-
-          const text = await page.locator(".promo-strip h2").textContent();
-          if (!text) return "";
-
-          return text.split(">>")[0]?.trim();
-        } finally {
-          await page.close();
-        }
-      },
-      ["daily-cupon"], // cache key
-      {
-        revalidate: seconds, // expires at end of day
-        tags: ["cupon"],
-      },
-    );
-
     return cachedGetCupon();
   }),
 });
+
+const seconds = getSecondsUntilEndOfDay();
+
+const cachedGetCupon = unstable_cache(
+  async () => {
+    const { browser, page } = await createPage();
+    try {
+      await page.goto("https://www.jysk.lv/darzam.html", {
+        waitUntil: "domcontentloaded",
+        timeout: 30_000,
+      });
+
+      console.log("runs")
+      await page.waitForSelector(".promo-strip h2", { timeout: 10_000 });
+
+      const text = await page.locator(".promo-strip h2").textContent();
+      if (!text) return "";
+
+      return text.split(">>")[0]?.trim();
+    } catch {
+      return "";
+    } finally {
+      await browser.close();
+    }
+  },
+  ["daily-cupon"],
+  {
+    revalidate: seconds,
+    tags: ["cupon"],
+  },
+);

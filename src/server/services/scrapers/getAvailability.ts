@@ -1,5 +1,4 @@
 import type { Page } from "playwright";
-import { safeAttr } from "./safeAttr";
 
 export type ProductAvailability = {
   stores: StoreAvailability[];
@@ -22,7 +21,6 @@ export const getProductAvailability = async (
   page: Page,
   size?: string,
 ): Promise<ProductAvailability> => {
-  // Super-fast size select (no overhead)
   const select = page.locator(
     "#product-options-wrapper select.super-attribute-select",
   );
@@ -31,37 +29,51 @@ export const getProductAvailability = async (
     await select.selectOption(size);
   }
 
-  // Wait for table to appear (does NOT require visibility)
   await page
     .locator("table.availability-table tbody")
     .waitFor({ timeout: 5000 })
     .catch(() => {});
-  await page.waitForLoadState("networkidle");
+  await page
+    .locator("product-info-main")
+    .waitFor({ timeout: 5000 })
+    .catch(() => {});
 
-  // Everything extracted in ONE evaluation — fastest method Playwright supports
-  const [specialPrice, regularPrice, loyaltyPrice, oldPrice] =
-    await Promise.all([
-      safeAttr(
-        page,
-        ".product-info-main .special-price .price-wo-currency",
-        "data-value",
-      ),
-      safeAttr(
-        page,
-        ".product-info-main .price-box:not(:has(.special-price)) .price-wo-currency",
-        "data-value",
-      ),
-      page
-        .locator(".product-info-main .loyalty-price .price-wo-currency")
-        .textContent(),
-      safeAttr(
-        page,
-        ".product-info-main .old-price .price-wo-currency",
-        "data-value",
-      ),
-    ]);
+  const result = await page.evaluate(() => {
+    const getPriceValue = (
+      selector: string,
+      attribute: "data-value" | "textContent" = "data-value",
+    ): string | undefined => {
+      const element = document.querySelector(selector);
+      console.log("element", element);
+      if (!element) return undefined;
 
-  const availability = await page.evaluate(() => {
+      console.log(
+        attribute,
+        attribute === "data-value"
+          ? element.getAttribute("data-value") || undefined
+          : element.textContent?.trim() || undefined,
+      );
+
+      return attribute === "data-value"
+        ? element.getAttribute("data-value") || undefined
+        : element.textContent?.trim() || undefined;
+    };
+
+    const specialPrice = getPriceValue(
+      ".product-info-main .special-price .price-wo-currency",
+    );
+    const regularPrice = getPriceValue(
+      ".product-info-main .price-box:not(:has(.special-price)) .price-wo-currency",
+    );
+    const loyaltyPrice = getPriceValue(
+      ".product-info-main .loyalty-price .price-wo-currency",
+      "textContent", // Using textContent as per original code
+    );
+    const oldPrice = getPriceValue(
+      ".product-info-main .old-price .price-wo-currency",
+    );
+
+    // 2. Availability Extraction
     const rows = document.querySelectorAll(
       "table.availability-table:not([style*='display: none']) tbody tr",
     );
@@ -88,24 +100,32 @@ export const getProductAvailability = async (
       const sampleAvailable =
         row.querySelector(".col.item-count .sample-is-available") !== null;
 
-      data.push({
-        city: currentCity || "",
-        address,
-        stock,
-        sampleAvailable,
-      });
+      // Only push a row if a city/address is present to avoid empty entries
+      if (currentCity || address) {
+        data.push({
+          city: currentCity || "",
+          address,
+          stock,
+          sampleAvailable,
+        });
+      }
     }
 
-    return data;
+    return {
+      prices: {
+        specialPrice,
+        regularPrice,
+        loyaltyPrice, // Already trimmed if found, or undefined
+        oldPrice,
+      },
+      stores: data,
+    };
   });
 
-  return {
-    prices: {
-      specialPrice,
-      regularPrice,
-      loyaltyPrice: loyaltyPrice ? loyaltyPrice.trim() : undefined,
-      oldPrice,
-    },
-    stores: availability,
-  };
+  // Return the result directly from the page.evaluate
+  return result;
 };
+
+// You should now remove or not use the safeAttr function from your file.
+// If your existing implementation relies on the ProductAvailability type
+// and the price fields are defined as string | undefined, this will work perfectly.

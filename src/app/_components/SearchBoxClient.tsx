@@ -31,6 +31,8 @@ export default function SearchBoxClient() {
     Omit<ProductInfo, "attributes" | "url">[]
   >([]);
 
+  console.log(suggestions);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -53,7 +55,7 @@ export default function SearchBoxClient() {
             ? h.type !== "product" || h.sku !== item.sku
             : h.type !== "query" || h.query !== item.query,
         ),
-      ].slice(0, 10);
+      ].slice(0, 5);
 
       setHistory(updated);
       localStorage.setItem("searchHistory", JSON.stringify(updated));
@@ -198,10 +200,8 @@ export default function SearchBoxClient() {
             </div>
           )}
 
-          {/* Show suggestions */}
           {term &&
             suggestions.length > 0 &&
-            !isSixDigit(term) &&
             suggestions.map((item) => (
               <SearchItem
                 key={item.sku + "-search"}
@@ -210,19 +210,6 @@ export default function SearchBoxClient() {
                 withSize={isSearchingSize}
               />
             ))}
-
-          {/* Exact SKU match */}
-          {term &&
-            isSixDigit(term) &&
-            suggestions.find((p) => p.sku === term) && (
-              <SearchItem
-                item={suggestions.find((p) => p.sku === term)!}
-                withSize
-                handleSelect={() =>
-                  handleSelect(suggestions.find((p) => p.sku === term)!)
-                }
-              />
-            )}
         </div>
       )}
     </div>

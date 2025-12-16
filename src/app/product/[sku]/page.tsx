@@ -8,7 +8,7 @@ import {
 } from "~/components/ui/accordion";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Spinner } from "~/components/ui/spinner";
-import { Suspense } from "react";
+import { cache, Suspense } from "react";
 import type { ProductAvailability } from "~/server/services/scrapers/getAvailability";
 import { SizeSelect } from "~/app/_components/sizeSelect";
 import Link from "next/link";
@@ -32,6 +32,10 @@ export default async function Page({ params }: Props) {
   );
 }
 
+const getAvailability = cache((key: string) =>
+  api.scrape.getProductAvailability(JSON.parse(key)),
+);
+
 const isSixDigit = (str: string) => /^\d{6}$/.test(str);
 
 async function Product({ params }: Props) {
@@ -41,8 +45,6 @@ async function Product({ params }: Props) {
   const store = cookieStore.get("store")?.value ?? "JYSK Krasta";
 
   const data = await api.product.getProductBySku({ sku });
-
-  console.log(data);
 
   if (!data)
     return (
@@ -63,25 +65,24 @@ async function Product({ params }: Props) {
         }
       : { link: data.url };
   const availability = data?.url
-    ? api.scrape.getProductAvailability(object)
+    ? getAvailability(JSON.stringify(object))
     : null;
-  const prices = data?.prices;
-  console.log("availability", availability);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header Section */}
-      <div className="mb-8 space-y-3">
+    <div className="mx-auto grid max-w-4xl gap-8 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="space-y-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <h1 className="text-3xl leading-tight font-bold tracking-tight sm:text-4xl">
             {data.title}
           </h1>
-          <span className="text-sm text-gray-500">SKU: {data.sku}</span>
+          <div>
+            <p className="text-sm text-gray-500">SKU: {data.sku}</p>
+          </div>
         </div>
       </div>
 
       {/* Availability Section */}
-      <div className="mb-8 space-y-3 rounded-lg border border-gray-200 bg-gray-50/50 p-5">
+      <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50/50 p-5">
         <h2 className="mb-4 text-lg font-semibold">Pieejamība</h2>
 
         <div className="flex items-start gap-3">
@@ -110,29 +111,25 @@ async function Product({ params }: Props) {
       </div>
 
       {/* Image Section */}
-      <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="relative h-[40svh] w-full overflow-hidden rounded-lg border border-gray-200 bg-white">
         <Image
           src={data.image}
           alt={data.title}
           fill
-          className="object-contain p-4"
+          className="object-contain"
         />
       </div>
-
-      {/* Price Section */}
       <Suspense fallback={<Spinner />}>
         <Price availabilityPromise={availability} />
       </Suspense>
-
-      {/* Size Selection */}
       {data?.sizes && (
-        <div className="mb-8">
+        <div>
           <SizeSelect sizes={data?.sizes} currentSku={data.sku} />
         </div>
       )}
 
       {/* Product Link */}
-      <div className="mb-8 rounded-lg border border-gray-200 bg-gray-50/50 p-4">
+      <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-4">
         <span className="text-sm font-medium text-gray-700">
           Apskatīties mājaslapā:{" "}
         </span>
@@ -199,12 +196,20 @@ async function Product({ params }: Props) {
 async function Price({
   availabilityPromise,
 }: {
-  availabilityPromise: Promise<ProductAvailability> | null;
+  availabilityPromise: Promise<ProductAvailability | null> | null;
 }) {
   const availability = await availabilityPromise;
+
   const prices = availability?.prices;
+
+  if (!prices)
+    return (
+      <span className="text-lg font-medium text-red-600">
+        Cenas nav atrastas
+      </span>
+    );
   return (
-    <div className="mb-8 space-y-3">
+    <div className="space-y-3">
       {prices?.regularPrice && (
         <div className="text-2xl font-bold tracking-tight">
           {prices.regularPrice} &euro;
@@ -241,7 +246,7 @@ async function Price({
 async function AvailabilityAccordion({
   availabilityPromise,
 }: {
-  availabilityPromise: Promise<ProductAvailability> | null;
+  availabilityPromise: Promise<ProductAvailability | null> | null;
 }) {
   const availability = await availabilityPromise;
   const grouped = availability?.stores.reduce<
@@ -252,8 +257,6 @@ async function AvailabilityAccordion({
     acc[city].push(store);
     return acc;
   }, {});
-
-  console.log("availability", availability);
 
   const getColor = (stock: string) => {
     if (parseInt(stock)) {
@@ -269,7 +272,12 @@ async function AvailabilityAccordion({
     }
   };
 
-  if (!availability) return null;
+  if (!availability)
+    return (
+      <span className="text-lg font-medium text-red-600">
+        Atlikums nav atrasts
+      </span>
+    );
 
   return (
     <AccordionItem
@@ -324,13 +332,16 @@ async function AvailabilityMain({
   availabilityPromise,
   store,
 }: {
-  availabilityPromise: Promise<ProductAvailability> | null;
+  availabilityPromise: Promise<ProductAvailability | null> | null;
   store: string;
 }) {
   const availability = await availabilityPromise;
   if (!availability)
     return (
-      <span className="text-sm font-medium text-red-600">Nav noliktavā</span>
+      <span className="text-sm font-medium text-red-600">
+        {" "}
+        Atlikums nav atrasts
+      </span>
     );
   const storeAvailability = availability.stores.find((s) =>
     s.address.includes(store),
@@ -338,12 +349,6 @@ async function AvailabilityMain({
 
   let availabilityText: string;
   let color: string;
-
-  console.log(
-    "store: ",
-    storeAvailability,
-    parseInt(storeAvailability?.stock || ""),
-  );
 
   if (
     parseInt(storeAvailability?.stock || "") ||
@@ -368,3 +373,5 @@ async function AvailabilityMain({
     <span className={`text-sm font-medium ${color}`}>{availabilityText}</span>
   );
 }
+
+export const dynamic = "force-static";

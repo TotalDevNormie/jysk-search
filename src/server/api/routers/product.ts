@@ -1,4 +1,4 @@
-import { and, eq, ilike, isNull, or, sql } from "drizzle-orm";
+import { and, eq, ilike, isNull, or, SQL, sql } from "drizzle-orm";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
@@ -15,24 +15,109 @@ function isInt(str: string): boolean {
   return Number.isInteger(num);
 }
 
-function buildSearchConditions(words: string[]) {
-  return words.map((w) => {
-    const escaped = escapeForRegex(w);
-    const regex = `.*${escaped}.*`; // matches like %w% (substring)
+const isSixDigit = (str: string) => /^\d{6}$/.test(str);
 
-    return or(
-      ilike(sql`unaccent(${products.title})`, `%${w}%`),
-      ilike(sql`unaccent(${products.sku})`, `%${w}%`),
-      ilike(sql`unaccent(${product_alternate_skus.alt_sku})`, `%${w}%`),
-      ilike(sql`unaccent(${products.description})`, `%${w}%`),
+function buildSearchConditions(words: string[]) {
+  return words.map((w) =>
+    or(
       sql`
-        jsonb_path_exists(
-          ${products.attributes},
-          ${`$[*] ? (@.data like_regex "${regex}" flag "i")`}
+        EXISTS (
+          SELECT 1
+          FROM unnest(
+            regexp_split_to_array(
+              unaccent(${products.title}),
+              '\\s+'
+            )
+          ) AS title_word
+          WHERE similarity(
+            title_word,
+            unaccent(${w})
+          ) > 0.25
         )
       `,
+
+      sql`similarity(unaccent(${products.sku}), unaccent(${w})) > 0.25`,
+      sql`similarity(unaccent(${product_alternate_skus.alt_sku}), unaccent(${w})) > 0.25`,
+      sql`similarity(unaccent(${products.description}), unaccent(${w})) > 0.25`,
+
+      sql`
+        EXISTS (
+          SELECT 1
+          FROM jsonb_array_elements(${products.attributes}) AS attr
+          WHERE similarity(
+            unaccent(attr->>'data'),
+            unaccent(${w})
+          ) > 0.25
+        )
+      `,
+    ),
+  );
+}
+
+function buildTitleOrderBy(words: string[]) {
+  return sql`
+    (
+      SELECT COALESCE(
+        MAX(
+          similarity(title_word, search_word)
+        ),
+        0
+      )
+      FROM unnest(
+        regexp_split_to_array(
+          unaccent(${products.title}),
+          '\\s+'
+        )
+      ) AS title_word
+      CROSS JOIN unnest(
+        ARRAY[
+          ${
+            words.length
+              ? sql.join(
+                  words.map((w) => sql`unaccent(${w})`),
+                  sql`, `,
+                )
+              : sql`NULL`
+          }
+        ]::text[]
+      ) AS search_word
+    ) DESC
+  `;
+}
+
+function buildWordSplitSearch(words: string[]) {
+  if (!words.length) return [];
+
+  const last = words[words.length - 1];
+  const initialWords = words.slice(0, -1);
+
+  const conditions: SQL[] = [];
+
+  if (initialWords.length > 0) {
+    initialWords.forEach((w) => {
+      conditions.push(
+        sql`EXISTS (
+          SELECT 1
+          FROM unnest(
+            regexp_split_to_array(unaccent(${products.title}), '\\s+')
+          ) AS title_word
+          WHERE similarity(title_word, unaccent(${w})) > 0.25
+        )`,
+      );
+    });
+  }
+
+  if (last) {
+    conditions.push(
+      sql`EXISTS (
+        SELECT 1
+        FROM jsonb_array_elements(${products.attributes}) AS elem
+        WHERE similarity(unaccent(elem->>'data'), unaccent(${last})) > 0.25
+      )`,
     );
-  });
+  }
+
+  return conditions;
 }
 
 export const productRouter = createTRPCRouter({
@@ -46,7 +131,30 @@ export const productRouter = createTRPCRouter({
         const words = q.split(/\s+/).filter(Boolean);
 
         const last = words[words.length - 1];
-        const queryString = words.join(" ");
+
+        if (words.length === 1 && isSixDigit(last as string)) {
+          return (await db
+            .select({
+              sku: products.sku,
+              title: products.title,
+              url: products.url,
+              image: products.image,
+              sizes: products.sizes,
+              prices: products.prices,
+            })
+            .from(products)
+            .leftJoin(
+              product_alternate_skus,
+              eq(products.sku, product_alternate_skus.product_sku),
+            )
+            .where(
+              or(
+                eq(products.sku, last as string),
+                eq(product_alternate_skus.alt_sku, last as string),
+              ),
+            )
+            .groupBy(products.sku)) as ProductInfo[];
+        }
 
         if (words.length >= 2 && last && /\d+/.test(last as string)) {
           return (await db
@@ -59,30 +167,13 @@ export const productRouter = createTRPCRouter({
               prices: products.prices,
             })
             .from(products)
-            .where(
-              and(
-                ilike(sql`unaccent(${products.title})`, `%${words[0]}%`),
-                sql`EXISTS (
-                  SELECT 1
-                  FROM jsonb_array_elements(${products.attributes}) AS elem
-                  WHERE elem->>'data' ILIKE ${`%${last}%`}
-                )`,
-              ),
-            )
+            .where(and(...buildWordSplitSearch(words)))
             .groupBy(products.sku)
-            .orderBy(
-              sql`greatest(
-  word_similarity(${products.title}, ${queryString}),
-  word_similarity(${products.sku}, ${queryString}),
-  word_similarity(${products.description}, ${queryString})
-) DESC`,
-            )
-            .limit(10)) as (ProductInfo & { rank: number })[];
+            .orderBy(buildTitleOrderBy(words))
+            .limit(5)) as ProductInfo[];
         }
 
         const conditions = buildSearchConditions(words);
-
-        console.log("works");
 
         return (await db
           .select({
@@ -110,15 +201,8 @@ export const productRouter = createTRPCRouter({
             ),
           )
           .groupBy(products.sku)
-
-          .orderBy(
-            sql`greatest(
-  word_similarity(${products.title}, ${queryString}),
-  word_similarity(${products.sku}, ${queryString}),
-  word_similarity(${products.description}, ${queryString})
-) DESC`,
-          )
-          .limit(5)) as (ProductInfo & { rank: number })[];
+          .orderBy(buildTitleOrderBy(words))
+          .limit(5)) as ProductInfo[];
       } catch (err) {
         console.error(err);
         return [];
@@ -155,7 +239,7 @@ export const productRouter = createTRPCRouter({
         const total = countResult?.count ?? 0;
 
         const results = (await db
-          .selectDistinct({
+          .select({
             sku: products.sku,
             title: products.title,
             url: products.url,
@@ -169,10 +253,10 @@ export const productRouter = createTRPCRouter({
             eq(products.sku, product_alternate_skus.product_sku),
           )
           .where(and(...conditions))
-          .orderBy(products.title)
+          .groupBy(products.sku) // ← use GROUP BY instead of SELECT DISTINCT
+          .orderBy(buildTitleOrderBy(words))
           .limit(input.limit)
           .offset(offset)) as ProductInfo[];
-
         return { products: results, total };
       } catch (err) {
         console.error(err);
